@@ -1,0 +1,15 @@
+In solar-terrestrial coupling, fast electromagnetic processes (solar flares, high-speed solar wind streams arriving in minutes to hours) open temporary amplification windows lasting 3 to 10 hours during which slower mechanical processes (tropospheric gravity waves arriving over 6 to 24 hours) produce ionospheric effects 2 to 4 times stronger than the same mechanical forcing would generate outside these windows.
+
+The asymmetry arises because electromagnetic events create ionospheric conductivity anomalies that persist for hours after the electromagnetic driving stops, but gravity wave coupling efficiency depends on the ionospheric conductivity state at wave arrival time, while the electromagnetic processes themselves remain unaffected by whether gravity waves are present.
+
+This is non-obvious because standard models treat these coupling channels as independent and additive: the total ionospheric response equals electromagnetic effect plus mechanical effect. The priming window reveals multiplicative interaction: electromagnetic history multiplies mechanical effectiveness without feedback in the reverse direction.
+
+This implies we should not expect storm-time ionospheric disturbances to scale simply with either solar wind intensity or tropospheric weather intensity, but rather with the timing alignment between the two. A moderate solar flare followed 5 hours later by moderate tropospheric convection can produce stronger F-region electron density gradients than a strong flare with no subsequent weather, or strong weather with no recent solar activity.
+
+The system exhibits three regimes based on a dimensionless coupling intensity that combines conductivity enhancement ratio and gravity wave energy relative to baseline thresholds: below 1 (sub-threshold, minimal ionospheric response), 1 to 3 (linear scaling), and above 3 (amplified regime where mechanical forcing effectiveness increases disproportionately).
+
+The temporal window duration (3 to 10 hours) emerges from ion-neutral collision processes and plasma transport timescales that allow conductivity structures to persist well beyond the electromagnetic driving, creating a memory effect where ionospheric state records recent solar activity and gates subsequent atmospheric wave coupling.
+
+This predicts that space weather forecasting should shift from treating solar and atmospheric inputs as independent terms in a sum to implementing conditional response functions where solar activity forecasts modulate the coupling coefficients applied to atmospheric wave models, with the modulation effect decaying exponentially over 4 to 8 hours.
+
+Statistical studies stratifying ionospheric responses to tropospheric gravity waves by timing relative to prior solar events should reveal factor-of-2 to factor-of-4 differences in F-region total electron content perturbations between events arriving during priming windows versus events arriving in quiescent periods, despite identical gravity wave energy flux at thermospheric altitudes.
