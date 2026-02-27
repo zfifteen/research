@@ -16,7 +16,29 @@ Checkpoint inhibitor immunotherapy targeting the PD-1/PD-L1 axis has transformed
 
 This observation solidified a clinical paradigm: PD-L1 expression became a patient selection biomarker, with PD-L1-negative patients routinely excluded from checkpoint inhibitor trials and clinical use. The logic appeared straightforward. If the tumor does not express the target molecule, blocking the PD-1/PD-L1 interaction should confer no therapeutic benefit.
 
+### Figure 1. Conventional Static vs Proposed Dynamic Patient Selection for Checkpoint Inhibitor Combinations in PD-L1-Negative mTNBC
 
+```mermaid
+flowchart TD
+subgraph Conventional ["Conventional Static Selection"]
+A["Baseline PD-L1 IHC<br/>(CPS < 1 or < 10)"] --> B{"PD-L1 Positive?"}
+B -->|Yes| C["Add PD-1/PD-L1 inhibitor<br/>+/- immune primer"]
+B -->|No| D["Exclude from ICI<br/>-> standard of care<br/>(ADC-only or chemo)"]
+end
+
+subgraph Dynamic ["Proposed Dynamic Kinetics Selection<br/>(After Immune Priming)"]
+E["Start immune priming<br/>(ivermectin pulsed or equivalent)"] --> F["Cycle 1 early assessment<br/>(day 15-21 biopsy or liquid CTC/CAML)"]
+F --> G{"Delta PD-L1 CPS per cycle?"}
+G -->|>= 0.5| H["Rapid inducer<br/>-> intact IFN machinery<br/>-> continue + add/maintain ICI<br/>-> expected RR > 30%"]
+G -->|<= 0.3| I["Sluggish or flat<br/>-> broken transcriptional response<br/>-> stop ICI immediately<br/>-> pivot to ADC-only<br/>-> expected RR < 5%"]
+G -->|0.3 to 0.5| J["Gray zone<br/>-> reassess at cycle 2<br/>or use serial liquid biopsy"]
+end
+
+style Conventional fill:#f8f8f8,stroke:#333,stroke-width:2px
+style Dynamic fill:#e6f7ff,stroke:#0077b6,stroke-width:3px
+style H fill:#d4edda,stroke:#1e7e34,stroke-width:2px,color:#111111
+style I fill:#f8d7da,stroke:#b02a37,stroke-width:2px,color:#111111
+```
 
 ### The Immune Landscape of Triple-Negative Breast Cancer
 
@@ -277,4 +299,3 @@ The velocity hypothesis represents a theoretical framework synthesized from thes
 22. PD-L1 Expression and Tumor-Infiltrating Lymphocytes Define Different Subsets of TNBC. AACR Clinical Cancer Research, 2015. https://aacrjournals.org/clincancerres/article/21/14/3140/125171/
 
 23. Dual PD-1 and CTLA-4 Checkpoint Blockade Using Balstilimab and Zalifrelimab. PMC8887945. https://pmc.ncbi.nlm.nih.gov/articles/PMC8887945/
-
