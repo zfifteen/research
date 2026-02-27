@@ -1,0 +1,18 @@
+Hypothesis (revised):
+===
+If any Casimir-based propulsion concept is real, the most plausible engineering path is not a single large static gap, but a dense array of nanoscale “cells” that are actively modulated, because the performance limit will be set by how much non-equilibrium asymmetry you can impose per unit area per unit time without overheating, not by the peak static Casimir force.
+
+Most writeups treat “Casimir propulsion” as a geometry/material optimization problem: build one best sandwich, hold it fixed, and expect a usable thrust. That framing hides the dominant bottleneck: whatever mechanism creates the required asymmetry (biasing, carrier injection, temperature gradients, optical pumping, etc.) has an energy cost per cycle and a heat-rejection constraint. The question is therefore: impulse delivered per cycle vs energy spent per cycle, under a cooling limit.
+
+At large scales with micron-class gaps, two things typically work against you:
+1) The actuation/maintenance energy tends to scale with the physical mass/volume of what you are driving (electrodes, substrates, thermal reservoirs, supports), and
+2) Heat removal is bottlenecked by conduction paths and packaging, so average power density is capped before you reach useful modulation depth or frequency.
+
+At nanoscale dimensions (order 10–100 nm), the device can be built as many small, thermally short-path cells. This does not magically create net thrust, but it can change the attainable operating point: you can potentially modulate boundary conditions faster and/or with less stored energy per unit active area, while staying under the same allowable power density. In that regime, “arraying” matters because force-like terms sum with active area, while the per-cell energy overhead can fall with miniaturization if the relevant thermal and electrical path lengths shrink.
+
+Pulsing is not claimed to multiply thrust for free. Instead, pulsing is a way to trade peak asymmetry for duty cycle under a fixed average power ceiling. If the per-cycle impulse scales more strongly with reduced gap than the per-cycle energy cost does, then the thrust-to-power ratio should improve as the cell size and gap shrink, up to a hard limit set by parasitics (patch potentials, stiction/pull-in, roughness, tunneling, finite conductivity, dielectric loss, and switching losses).
+
+Falsifiable prediction (what would make this useful or kill it):
+For two devices with the same total active area and measured thermal power density, (A) a distributed nano-cell array with sub-100 nm gaps and (B) a single macro-gap device, the nano-array should achieve a significantly higher impulse-per-joule (or force-per-watt) only if it can demonstrate a larger modulation depth of the relevant boundary condition at the same or lower energy-per-cycle per unit area. If the measured impulse-per-joule does not improve (even modestly) as gap/cell size shrink—after controlling for electrostatic artifacts—then the “miniaturization path” claim is wrong.
+
+This hypothesis does not assume that Casimir propulsion is already proven. It only claims: if there is any real, extractable impulse associated with modulating Casimir-like boundary conditions, then the scaling and thermal constraints make a pulsed nanoscale array the most testable and most scalable configuration to investigate, and static macroscale gaps are the least likely to show favorable thrust-to-power performance.
