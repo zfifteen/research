@@ -18,21 +18,22 @@ Working hypothesis from this research stream:
 
 ## Repository Contents
 
-- `white-paper.md`: Full manuscript with rationale, mechanism, trial context, figures, limitations, and references.
-- `INSIGHT.md`: Compressed statement of the central clinical/research insight.
-- `white-paper-banner.png`: Visual asset for sharing or presentation headers.
-- `PD-L1-Velocity-Presentation.pptx` / `PDL1_Velocity_Presentation.pptx`: Slide deck versions.
-- `PD-L1-Velocity-Presentation.mp4` / `PDL1_Velocity_Presentation.mp4`: Rendered presentation videos.
-- `white-paper-presentation.pptx` / `white-paper-presentation.mp4`: Alternative white-paper presentation outputs.
-- `PDL1_Velocity_Presentation/`: Per-slide Markdown + PNG assets (`01` through `15`).
-- `carbon-copy.md`: Distribution/outreach notes and account targeting.
+- `docs/white-paper.md`: Full manuscript with rationale, mechanism, trial context, figures, limitations, and references.
+- `docs/INSIGHT.md`: Compressed statement of the central clinical/research insight.
+- `docs/carbon-copy.md`: Distribution/outreach notes and account targeting.
+- `assets/white-paper-banner.png`: Visual asset for sharing or presentation headers.
+- `slides/PD-L1-Velocity-Presentation.pptx` / `slides/PDL1_Velocity_Presentation.pptx`: Slide deck versions.
+- `slides/white-paper-presentation.pptx`: Alternative white-paper presentation output.
+- `slides/PDL1_Velocity_Presentation/`: Per-slide Markdown + PNG assets (`01` through `15`).
+- `videos/PD-L1-Velocity-Presentation.mp4` / `videos/PDL1_Velocity_Presentation.mp4`: Rendered presentation videos.
+- `videos/white-paper-presentation.mp4`: Alternative white-paper presentation video.
 
 ## How To Use This Repo
 
-1. Read `INSIGHT.md` for the one-page concept.
-2. Read `white-paper.md` for complete scientific argumentation.
+1. Read `docs/INSIGHT.md` for the one-page concept.
+2. Read `docs/white-paper.md` for complete scientific argumentation.
 3. Use slide/video assets for talks, asynchronous sharing, or collaborator briefing.
-4. Reuse the per-slide Markdown in `PDL1_Velocity_Presentation/` for edits, narration changes, or deck regeneration workflows.
+4. Reuse the per-slide Markdown in `slides/PDL1_Velocity_Presentation/` for edits, narration changes, or deck regeneration workflows.
 
 ## Scope and Status
 
