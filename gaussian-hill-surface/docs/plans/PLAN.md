@@ -1,7 +1,7 @@
 # PhaseWall PoC App (Standalone, Local-First MVP)
 
 ## Summary
-Build a new standalone app at `/Users/velocityworks/IdeaProjects/research/phasewall-poc-app` that proves the core insight from [README.md](/Users/velocityworks/IdeaProjects/research/gaussian-hill-surface/README.md): the Gaussian surface has a curvature sign flip at the 1σ ring, and phase-aware update rules can improve stability/performance.
+Build a new standalone app at `/Users/velocityworks/IdeaProjects/research/phasewall-poc-app` that proves the core insight from [README.md](../../README.md): the Gaussian surface has a curvature sign flip at the 1σ ring, and phase-aware update rules can improve stability/performance.
 
 This PoC will be:
 1. Interactive web app (`Streamlit + Plotly`).
