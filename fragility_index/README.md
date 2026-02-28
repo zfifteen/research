@@ -1,5 +1,7 @@
 # Fragility Index (FI)
 
+<img src="00_image.jpg" alt="Figure 0" width="500" />
+
 ---
 
 \[
