@@ -9,6 +9,19 @@ Solar electromagnetic events (flares and high-speed solar-wind streams) can crea
 - `docs/`: manuscript notes and supporting text.
 - `scripts/`: figure-generation and analysis scripts.
 - `figures/`: generated plots and figure assets.
+- `slides/`: presentation decks.
+- `videos/`: recorded talks and visual explainers.
+
+## Presentations and Video
+- Slides (PPTX): [`slides/priming-window-framework.pptx`](./slides/priming-window-framework.pptx)
+- Video (MP4): [`videos/Solar-Terrestrial Coupling.mp4`](./videos/Solar-Terrestrial%20Coupling.mp4)
+
+### Embedded Video
+<video src="./videos/Solar-Terrestrial%20Coupling.mp4" controls width="960">
+  Your viewer does not support embedded video.
+</video>
+
+If the embedded player is not shown in your markdown viewer, open the file directly: [`Solar-Terrestrial Coupling.mp4`](./videos/Solar-Terrestrial%20Coupling.mp4).
 
 ## Generate Timeline Figure
 Run from the repository root:
