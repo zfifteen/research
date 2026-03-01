@@ -1,62 +1,72 @@
 # Dynamical Symmetry Breaking in Legendre Duality
 
-This directory contains an executable theory note showing how Legendre-dual representations become dynamically inequivalent under finite-rate driving.
+This directory contains two related executable white papers about the same thesis:
+finite-rate driving can make Legendre-conjugate representations thermodynamically inequivalent.
 
-## Thesis
-
-Classical Legendre duality is exact in the quasi-static limit, where relaxation is effectively complete between perturbations.  
-When driving is finite-rate, lag currents appear and dissipation depends on which representation is used.
+## Shared Thesis
 
 Key control parameter:
 
 ```text
-Omega = omega_pert * tau_relax
+Omega = omega_pert * tau_relax = omega_pert / gamma_relax
 ```
 
-- `Omega << 1`: near-equilibrium, dual descriptions are effectively symmetric.
-- `Omega >= 1`: non-adiabatic effects matter, and symmetry breaks dynamically.
+- `Omega << 1`: near-equilibrium behavior, weak/no symmetry breaking.
+- `Omega >= 1`: finite-rate effects can produce representation-dependent dissipation.
 
-## Theory Sketch
+## Two White Papers
 
-1. **Static geometric symmetry**  
-   Legendre transform is involutive in equilibrium-like conditions.
+### 1) `dynamical_symmetry_breaking.py` (Conceptual / Communication-Focused)
 
-2. **Finite-rate correction**  
-   Entropy production decomposes as:
+What it is:
+- A narrative, executable conceptual white paper with stylized curves and explanatory figures.
+- Designed to communicate the hypothesis and intuition quickly.
 
-   ```text
-   Sigma_tot = Sigma_hk + Sigma_na
-   ```
+What it is not:
+- Not a first-principles mechanistic simulation of the full dynamics.
+- Some plotted relationships are explicitly constructed to illustrate the argument.
 
-   where `Sigma_na` captures excess non-adiabatic dissipation.
+Current highlighted chemotaxis window:
+- Near-critical `Omega ~ 0.6-1.2` (conceptual ATP savings band shown in Figure 3).
 
-3. **Representation-dependent cost**  
-   Under finite-rate driving, the lag term projects differently in primal vs dual coordinates.  
-   This leads to different dissipation even when both representations describe the same static manifold.
+Outputs:
+- `figures/whitepaper_fig1_symmetry_breaking.png`
+- `figures/whitepaper_fig2_lag.png`
+- `figures/whitepaper_fig3_chemotaxis_atp.png`
 
-4. **Chemotaxis interpretation**  
-   For rapid concentration fluctuations, the concentration-based (primal) representation is cheaper in this model than the chemical-potential-like (dual) representation.
+### 2) `legendre_thermodynamics_whitepaper.py` (Mechanistic / Simulation-Focused)
+
+What it is:
+- A numerical white paper using SciPy ODE integration.
+- Includes two models:
+  - harmonic oscillator control check in equivalent primal vs dual dynamics (no asymmetry baseline)
+  - chemotaxis-style biochemical adaptation model with finite-bandwidth sensing
+- Uses matched primal/dual cost definitions; asymmetry in chemotaxis emerges from modeled finite-bandwidth sensing in different coordinates (`L`-space vs `mu`-space), not from an explicit dual-only penalty term.
+
+Outputs:
+- `figures/fig1_entropy_vs_switching.png`
+- `figures/fig2_atp_chemotaxis.png`
 
 ## Figures
 
-### Figure 1: Finite-rate symmetry breaking vs Omega
-
-Shows that representation-dependent dissipation emerges at finite `Omega` and vanishes toward the slow-driving regime.
+### Conceptual White Paper Figures (`dynamical_symmetry_breaking.py`)
 
 ![Figure 1: Symmetry breaking](figures/whitepaper_fig1_symmetry_breaking.png)
+Finite-rate symmetry-breaking trend vs `Omega`.
 
-### Figure 2: High-Omega lag separation
-
-Illustrates larger lag amplitude/phase offset in the dual representation at high driving frequency.
-
-![Figure 2: High-Omega lag](figures/whitepaper_fig2_lag.png)
-
-### Figure 3: ATP cost prediction window
-
-Shows model-predicted ATP advantage for the primal representation over `Omega = 5..30`.  
-With current parameters, the plotted savings window is approximately `16.8-20.6%` (mean `18.5%`).
+![Figure 2: Finite-Omega lag](figures/whitepaper_fig2_lag.png)
+Illustrative lag separation under finite-rate driving.
 
 ![Figure 3: Chemotaxis ATP prediction](figures/whitepaper_fig3_chemotaxis_atp.png)
+Conceptual ATP savings window plot for primal vs dual representation in `Omega ~ 0.6-1.2`.
+
+### Mechanistic White Paper Figures (`legendre_thermodynamics_whitepaper.py`)
+
+![Figure 1: Entropy vs switching](figures/fig1_entropy_vs_switching.png)
+Simulated entropy production across switching/relaxation ratios, including a no-asymmetry control check for equivalent primal/dual oscillator dynamics.
+
+![Figure 2: ATP chemotaxis](figures/fig2_atp_chemotaxis.png)
+Simulated ATP cost comparison in the chemotaxis model where asymmetry emerges from finite-bandwidth sensing in different coordinates.
 
 ## Run
 
@@ -66,11 +76,19 @@ From this directory:
 ./run_whitepaper.sh
 ```
 
-This regenerates all three figures under `figures/`.
+Runs `dynamical_symmetry_breaking.py` and regenerates the three conceptual figures.
+
+```bash
+./run_legendre_whitepaper.sh
+```
+
+Runs `legendre_thermodynamics_whitepaper.py` and regenerates the two mechanistic figures.
 
 ## Files
 
-- `dynamical_symmetry_breaking.py`: executable white-paper script
-- `run_whitepaper.sh`: reproducible runner with local cache settings
-- `requirements.txt`: Python dependency pins/ranges
-- `figures/`: generated output figures used above
+- `dynamical_symmetry_breaking.py`: conceptual executable white paper
+- `run_whitepaper.sh`: runner for `dynamical_symmetry_breaking.py`
+- `legendre_thermodynamics_whitepaper.py`: simulation-based executable white paper
+- `run_legendre_whitepaper.sh`: runner for `legendre_thermodynamics_whitepaper.py`
+- `requirements.txt`: dependency version ranges for local `.venv`
+- `figures/`: generated output figures from both white papers
