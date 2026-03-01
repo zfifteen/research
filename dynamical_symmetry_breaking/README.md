@@ -14,6 +14,16 @@ Omega = omega_pert * tau_relax = omega_pert / gamma_relax
 - `Omega << 1`: near-equilibrium behavior, weak/no symmetry breaking.
 - `Omega >= 1`: finite-rate effects can produce representation-dependent dissipation.
 
+---
+# Why this matters
+
+- In nonequilibrium thermodynamics, Legendre transforms are usually treated as innocent reparametrizations; showing finite-rate regimes where conjugate descriptions give different dissipation challenges a deeply baked-in assumption about “representation invariance.”
+- For biophysics and cell biology, this means that the thermodynamic cost of sensing and adaptation can depend on whether the organism “implements” control in concentration space or chemical potential space, which is an experimentally testable difference.
+- For modeling and inference, it warns that coordinate choices at finite driving rate are not just cosmetic: two models that look equivalent at the level of equilibrium potentials can disagree on entropy production, ATP budgets, and optimal control strategies once relaxation times and switching frequencies are comparable.
+- For information theory and control, it suggests a concrete way that finite bandwidth and lag can select preferred representations out of an otherwise symmetric Legendre pair, linking abstract duality to physical design pressures in real sensing systems like chemotaxis.
+
+---
+
 ## Two White Papers
 
 ### 1) `dynamical_symmetry_breaking.py` (Conceptual / Communication-Focused)
