@@ -4,7 +4,7 @@
 This document defines the implementation contract for v1.
 
 Cross-links:
-- Product framing: [README.md](./README.md)
+- Product framing: [README.md](../README.md)
 - Math and algorithm correctness: [MATH.md](./MATH.md)
 - App narrative: [APP_STORY.md](./APP_STORY.md)
 - User journey and acceptance framing: [USER_STORY.md](./USER_STORY.md)
@@ -60,11 +60,18 @@ Primary remains the default implementation target.
 
 ### 4.2 Repunit Phase Transition
 - Must clearly show cliff behavior:
-  - pre-cliff: `n = b-1`
-  - post-cliff: `n = b`
+  - for `b >= 3`:
+    - pre-cliff: `n = b-1`
+    - post-cliff: `n = b`
+  - for `b = 2`:
+    - pre-cliff: `n = 2`
+    - post-cliff: `n = 3`
 - Base-10 canonical examples must appear in built-in content:
   - `111111111^2 = 12345678987654321`
   - `1111111111^2 = 1234567900987654321`
+- Base-2 special-case examples must appear in built-in content:
+  - `11^2 = 1001`
+  - `111^2 = 110001`
 
 ### 4.3 Step-through Carry Animator (Required)
 - Full timeline controls: play, pause, step forward/backward, restart, speed control.
@@ -84,7 +91,12 @@ Primary remains the default implementation target.
 - First run must auto-load one gallery sample project.
 
 ### 4.6 Local Persistence
-- Auto-save by default on meaningful change.
+- Auto-save by default.
+- Meaningful change policy:
+  - save when committed input/settings change (base change, root digits change, project rename, settings toggle).
+  - do not save transient pointer-drag frames; save on drag-end.
+  - for text/stepper edits, debounce save by `500 ms` after last input event.
+- On `visibilitychange`/`pagehide`, flush any pending debounced save (best effort).
 - Support multiple saved projects with names and timestamps.
 - Data management UI must include:
   - per-project delete
@@ -93,13 +105,32 @@ Primary remains the default implementation target.
 - Startup must include corrupted-data recovery flow with cleanup options.
 
 ### 4.7 Local-only Export and Sharing
-- No cloud sync, no backend storage, no import in v1.
+- No cloud sync, no backend storage, and no file-based import in v1.
+- Allowed inbound state path in v1: URL-encoded state hydration only.
 - Required export/share actions:
   - `JSON` (project/result payload)
   - `SVG`
   - `PNG`
   - `Markdown` theorem/snippet text
   - shareable URL state (query/hash encoded)
+- JSON export schema contract (required):
+  - top-level fields: `schemaVersion`, `exportedAt`, `project`, `result`.
+  - `schemaVersion` must be `v1` in this release.
+  - `project` must include canonical `base` and `rootDigits` per Section 8.4.
+  - `result` must include `mode` (`preview|exact`) and `isApproximate`; exact-only fields must be omitted or `null` in preview-only exports.
+- URL state contract:
+  - payload must include a schema version field (for example `v=1`).
+  - unknown/unsupported versions must not crash app startup.
+  - unknown/invalid payloads must show a non-blocking error and fall back to default/new project state.
+
+### 4.8 Search Guidance (Required)
+- Include a dedicated guidance section/panel that classifies candidate root families by expected peak-growth behavior.
+- Guidance must align with `README.md` and `APP_STORY.md` language:
+  - linear or faster peak growth implies a finite symmetry ceiling,
+  - sublinear/bounded growth is the viable region for longer-lived symmetry.
+- For repunits, guidance must display the exact threshold rule from `MATH.md`:
+  - for `b >= 3`: last palindromic length is `b-1`,
+  - for `b = 2`: last palindromic length is `2`.
 
 ## 5. Non-Functional Requirements
 ### 5.1 Offline and Self-contained
@@ -149,7 +180,7 @@ All values are targets with adaptive runtime tuning.
 
 | Metric | Desktop Target | Mobile Target |
 |---|---:|---:|
-| Animation frame rate during active visuals | >= 45 FPS | >= 30 FPS |
+| Animation frame rate during active visuals | >= 30 FPS sustained (target 60 FPS) | >= 30 FPS |
 | Input-to-preview latency (typical/safe range) | <= 150 ms | <= 300 ms |
 | Exact compute soft budget (safe range) | <= 2.5 s | <= 5.0 s |
 | Warning threshold before manual override prompt | predicted > 2.5 s | predicted > 5.0 s |
@@ -189,6 +220,7 @@ palindromic-square/
       explorer/
       builder/
       animator/
+      search-guidance/
       gallery/
       exports/
       data-management/
@@ -243,7 +275,7 @@ Required tables:
   - `createdAt`
   - `updatedAt`
   - `base`
-  - `rootDigits` (canonical encoding)
+  - `rootDigits` (canonical serialized digits per Section 8.4)
   - `settings` (JSON)
   - `cachedArtifacts` (optional JSON, exact/preview metadata)
 - `appMeta`
@@ -266,17 +298,55 @@ Migration requirements:
 - Use Comlink RPC interface.
 - Jobs must support cancellation and deterministic completion semantics.
 - Output payload must include:
-  - normalized digits
+  - normalized digits (exact or preview representation)
   - raw coefficients
-  - peak
-  - palindrome verdict
+  - peak (or bounded estimate in preview mode)
+  - palindrome verdict (`true|false`) for exact mode; `indeterminate` allowed in preview mode
   - `isApproximate` flag
+  - carry trace for animator input (required in exact mode), with per-position entries:
+    - `position`
+    - `rawCoefficient`
+    - `incomingCarry`
+    - `digitOut`
+    - `outgoingCarry`
+  - carry-trace fallback for large exact jobs:
+    - if estimated carry-trace payload exceeds `5 MB`, worker may omit `carryTrace`.
+    - when omitted, payload must include `carryTraceOmitted=true` and `carryTraceOmissionReason`.
+    - UI must fall back to coefficient/peak visualization and show explicit "full carry trace unavailable for this input size".
   - timing diagnostics
 
 ### 8.3 Preview Contract
-- Preview can use truncated/chunked/sampled strategies.
+- Repunit fast path:
+  - preview is not required for repunit verdict/classification.
+  - use the `MATH.md` `O(1)` fast verdict rule directly (exact classification).
+- Arbitrary-root preview activation:
+  - activate preview when predicted exact time exceeds input-to-preview budget, or when input exceeds adaptive `safeDigitsExact`.
+  - preview must mark all derived values as `Approximate` unless explicitly exact.
+- Preferred preview algorithm (v1):
+  - deterministic strided sampling of raw coefficients for heatmap/shape visualization.
+  - exact computation of a center window around the peak candidate for carry-overflow illustration.
+  - optional prefix/suffix exact-digit windows for immediate UI feedback.
+- Preview output requirements:
+  - if palindrome verdict is not exact, return `indeterminate` (not `true|false`).
+  - if peak is not exact, return a bounded estimate (`peakMin`, `peakMax`).
 - Preview must never be presented as exact.
 - UI must prevent exact-only actions while `isApproximate=true`.
+
+### 8.4 Canonical Data Types (Required)
+- Integer digits in core math/worker code are represented in little-endian arrays (`digitsLE`), matching `MATH.md`.
+- Canonical serialized digit format (storage/export/URL) is MSB-first uppercase string `digitsMSB`:
+  - no prefix (`0x`, etc.),
+  - symbols `0-9A-Z`,
+  - parse is case-insensitive,
+  - emit is uppercase,
+  - no leading zeros except canonical zero `"0"`.
+- Canonical project root encoding:
+  - `base`: integer `2..36`
+  - `rootDigits`: canonical `digitsMSB` string in that base
+- Conversion rules:
+  - deserialize `rootDigits` (MSB string) -> validate symbols against `base` -> convert to `digitsLE` for compute.
+  - serialize compute/state back to canonical `digitsMSB` before persistence/export/URL encoding.
+- Any BigInt-valued fields that are serialized to JSON must be encoded as base-10 strings.
 
 ## 9. UI Requirements
 Required screens/panels:
@@ -284,10 +354,14 @@ Required screens/panels:
 - Root builder (default sparse tools + advanced digit mode)
 - Convolution/heatmap view
 - Carry animator (full step-through controls)
+- Search guidance panel
 - Example gallery
 - Export/share panel
 - Data management panel
 - Debug panel (dev-only or explicit toggle)
+
+Palindrome verdict rendering requirements:
+- When verdict is `indeterminate`, UI must render "Palindrome: Unknown (exact computation required)" (or equivalent wording with same meaning), not `false`.
 
 Debug panel minimum fields:
 - profile (desktop/mobile)
@@ -315,18 +389,31 @@ Because this is local-only by design:
 - Property tests for:
   - deterministic output for same input
   - carry normalization bounds (`0..b-1`)
+  - carry-trace consistency (`digitOut == (rawCoefficient + incomingCarry) mod base`, `outgoingCarry == floor((rawCoefficient + incomingCarry)/base)`)
   - palindrome verdict consistency
-  - repunit cliff behavior across `b in [2,36]`
+  - repunit cliff behavior across `b in [2,36]`, including:
+    - `b >= 3`: pre-cliff `n = b-1`, post-cliff `n = b`
+    - `b = 2`: pre-cliff `n = 2`, post-cliff `n = 3`
 
 ### 11.2 Cross-browser Determinism
 - Same seeded input corpus must yield identical exact output digests across supported browsers.
+- Determinism digest algorithm (required):
+  - digest function: `SHA-256`
+  - digest input object fields (exact mode only): `schemaVersion`, `base`, `rootDigits`, `normalizedSquareDigits`, `peak`, `isPalindrome`
+  - `rootDigits` and `normalizedSquareDigits` must use canonical `digitsMSB` from Section 8.4.
+  - serialize digest input as canonical JSON UTF-8 bytes with lexicographically sorted keys and no insignificant whitespace.
+  - digest output encoding: lowercase hex string.
+- Timing diagnostics, animation state, and UI-only metadata must be excluded from digest input.
 
 ### 11.3 E2E
 - Playwright smoke suite for:
   - first-run gallery load
   - create/edit/save multiple projects
   - preview labeling and exact-action blocking
+  - search guidance renders and shows expected threshold messaging
   - export flows
+  - URL share-state hydration happy path
+  - URL share-state unknown-version/invalid-payload fallback behavior
   - data clear and cache refresh flows
   - offline launch behavior
 
@@ -372,6 +459,7 @@ Deliverables:
 - builder (sparse + advanced digits)
 - convolution/heatmap
 - carry animator (full controls)
+- search guidance panel + threshold messaging
 - gallery + first-run sample
 Acceptance:
 - End-to-end story flow from `USER_STORY.md` is demonstrable.
@@ -399,7 +487,7 @@ Acceptance:
 ## 14. Out of Scope (v1)
 - Backend APIs, cloud sync, auth/accounts
 - Multi-user collaboration
-- Import workflows
+- File-based import workflows
 - General multiplication of two distinct roots
 - Formal WCAG certification work
 - Localization/i18n (English-only v1)

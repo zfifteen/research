@@ -10,6 +10,10 @@ This spec covers the model stated in `README.md`:
 - convolution-driven peak growth,
 - carry-triggered symmetry breaking at a sharp threshold.
 
+Important scope note:
+- The simple cliff rule `n = b-1` to `n = b` is exact for `b >= 3`.
+- Base 2 is a special case with a later break (`n = 2` to `n = 3`).
+
 ## Canonical Terms
 - `base` or `b`: radix of positional representation.
 - `symbol capacity`: valid single-digit range `0..b-1`.
@@ -42,28 +46,45 @@ So the peak is:
 
 ## Project Theorem (Canonical)
 For repunits under this project model:
-- at `n = b-1`, palindromic square structure is still valid,
-- at `n = b`, central accumulation reaches/exceeds symbol capacity and carry propagation breaks the mirror,
-- therefore the cliff edge is `n = b-1`.
+- for `b >= 3`:
+  - at `n = b-1`, palindromic square structure is still valid,
+  - at `n = b`, central accumulation reaches/exceeds symbol capacity and carry propagation breaks the mirror,
+  - therefore the cliff edge is `n = b-1`.
+- for `b = 2`:
+  - `n = 2` is still palindromic (`11_2^2 = 1001_2`),
+  - `n >= 3` is not palindromic,
+  - therefore the cliff edge is `n = 2`.
 
 Equivalent threshold form:
-- safe side: `peak < b`
-- failure side: `peak >= b`
+- for `b >= 3`:
+  - safe side: `peak < b`
+  - failure side: `peak >= b`
+- for `b = 2`:
+  - safe side: `n <= 2`
+  - failure side: `n >= 3`
 
 ## Proof Sketch (Implementation-Level)
 1. Repunit squaring is self-convolution of a uniform vector.
 2. Self-convolution yields a symmetric triangle with center value `n`.
-3. When `n < b`, center can be represented as one symbol, so no forced center overflow.
-4. When `n >= b`, center is not representable as one symbol and must decompose via carry.
-5. Carry introduces asymmetric spill relative to the mirror axis in this model, so palindrome structure is lost.
+3. For `b >= 3`, when `n < b`, center can be represented as one symbol, so no forced center overflow.
+4. For `b >= 3`, when `n >= b`, center is not representable as one symbol and must decompose via carry.
+5. For `b >= 3`, carry introduces asymmetric spill relative to the mirror axis in this model, so palindrome structure is lost.
+6. For `b = 2`, direct computation gives:
+   - `n = 2`: `11_2^2 = 1001_2` (palindromic),
+   - `n = 3`: `111_2^2 = 110001_2` (not palindromic),
+   and this non-palindromic behavior continues for larger `n`.
 
 ## Algorithms
 ### A. Fast Verdict for Repunits
 Input: `base b`, `length n`.
 
 Rule:
-- if `n <= b-1`: classify as pre-cliff (palindrome side),
-- else: classify as post-cliff (broken side).
+- if `b == 2`:
+  - if `n <= 2`: classify as pre-cliff (palindrome side),
+  - else: classify as post-cliff (broken side).
+- else (`b >= 3`):
+  - if `n <= b-1`: classify as pre-cliff (palindrome side),
+  - else: classify as post-cliff (broken side).
 
 Time: `O(1)`.
 
@@ -119,6 +140,16 @@ Time: `O(m^2)` with naive convolution.
 - `n = 10`:
   - root: `1111111111`
   - square: `1234567900987654321`
+  - classification: post-cliff
+
+### Base 2 (Special Case)
+- `n = 2`:
+  - root: `11`
+  - square: `1001`
+  - classification: pre-cliff
+- `n = 3`:
+  - root: `111`
+  - square: `110001`
   - classification: post-cliff
 
 ## Engineering Notes
