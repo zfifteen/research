@@ -10,5 +10,7 @@ This repository contains multiple independent research projects. The table below
 | [EM-GW Priming Window](./em-gw-priming-window/README.md) | Ionosphere-troposphere coupling project proposing a conductivity-memory priming window where prior solar EM forcing multiplicatively gates later gravity-wave responses. |
 | [Fragility Index (FI)](./fragility_index/README.md) | Orbital-dynamics framework defining a twist-fragility metric for when small perturbations shatter KAM-structure stability and drive chaos. |
 | [Gaussian Surface Geometry](./gaussian-hill-surface/README.md) | Differential-geometry exploration of Gaussian surfaces, including the 1-sigma curvature transition interpretation and visuals. |
+| [Palindromic Square Cliff (Repunits)](./palindromic-square/README.md) | Number-theory project showing a sharp base-dependent transition where repunit squares lose palindromic structure at `n = b - 1` due to central-digit carry overflow. |
 | [PhaseWall PoC App](./phasewall-poc-app/README.md) | Local-first Streamlit proof-of-concept app testing the Gaussian 1-sigma phase-wall insight with trajectory and optimizer benchmarks plus exportable evidence artifacts. |
 | [PD-L1 Kinetics Research](./pd-l1-kinetics/README.md) | Oncology research project on dynamic PD-L1 induction velocity as a decision signal after immune priming in mTNBC. |
+| [tSZ Chronometer](./tsz-chronometer/README.md) | Astrophysics framework treating protocluster thermal-energy surplus as a clock on uninterrupted AGN heating duty cycle and merger-free assembly windows. |
