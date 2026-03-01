@@ -1,7 +1,7 @@
 # App Story: PeakGuard
 
 ## Purpose
-PeakGuard is an interactive explainer for one specific phenomenon described in `README.md`:
+PeakGuard is an interactive explainer for one specific phenomenon described in `README.md` and formalized in `MATH.md`:
 for repunits (and other uniform-element self-products), palindromic square structure fails at a sharp threshold when the central convolution peak reaches the base.
 
 In base 10, this means:
@@ -36,3 +36,7 @@ As long as the central accumulation remains within single-symbol capacity (`peak
 ## Promise
 PeakGuard does not present palindromic behavior as luck.  
 It presents it as a structural constraint with a computable threshold.
+
+## References
+- Product narrative source: [README.md](./README.md)
+- Engineering math source: [MATH.md](./MATH.md)

@@ -4,6 +4,10 @@ As an algorithm designer,
 I want to see when repunit-square palindromes must fail in a given base,
 so that I can stop impossible searches early and focus on constructions with viable symmetry.
 
+References:
+- Product framing: [README.md](./README.md)
+- Math/algorithm contract: [MATH.md](./MATH.md)
+
 ## Scenario
 1. I open PeakGuard and choose a base `b`.
 2. I move a repunit-length slider `n`.
@@ -21,7 +25,7 @@ so that I can stop impossible searches early and focus on constructions with via
 
 ## Acceptance Criteria
 - The app marks repunit squares as palindromic exactly up to `n = b - 1`, and not beyond.
-- The failure explanation explicitly references the README model:
+- The failure explanation explicitly references the README/MATH model:
   central accumulation exceeds symbol capacity, causing asymmetric carry propagation.
 - The UI frames the behavior as a sharp phase transition, not gradual degradation.
 - The guidance section warns that linear (or faster) peak growth implies a finite symmetry ceiling.

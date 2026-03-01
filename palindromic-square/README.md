@@ -1,5 +1,15 @@
+# Palindromic Square Cliff (Repunits)
 
-The palindromic square pattern from repunits (111...1)² breaks at exactly n=(base-1) digits because squaring a repunit is equivalent to convolving a uniform sequence with itself, producing a triangular distribution whose peak value equals n, and when this peak meets or exceeds the base radix, it triggers a carry that propagates asymmetrically and irreversibly destroys the palindromic structure.
+## Document Roles
+- `README.md` is the product-level narrative source of truth.
+- `MATH.md` is the implementation-math source of truth (definitions, theorems, algorithms, test vectors).
+- `APP_STORY.md` and `USER_STORY.md` must stay consistent with both.
+
+See: [MATH.md](./MATH.md)
+Related: [APP_STORY.md](./APP_STORY.md), [USER_STORY.md](./USER_STORY.md)
+
+## Core Claim
+The palindromic square pattern from repunits (111...1)^2 breaks at exactly n=(base-1) digits because squaring a repunit is equivalent to convolving a uniform sequence with itself, producing a triangular distribution whose peak value equals n, and when this peak meets or exceeds the base radix, it triggers a carry that propagates asymmetrically and irreversibly destroys the palindromic structure.
 
 The breakdown is not gradual deterioration but a sharp phase transition: one digit below the threshold produces perfect symmetry, one digit above guarantees failure.
 
