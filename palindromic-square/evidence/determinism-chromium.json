@@ -1,0 +1,88 @@
+{
+  "browser": "chromium",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.7632.6 Safari/537.36",
+  "timestamp": "2026-03-01T06:41:57.962Z",
+  "results": [
+    {
+      "label": "b10_111",
+      "base": 10,
+      "root": "111",
+      "squareDigestPrefix": "1234567898765432110",
+      "isPalindrome": "Yes",
+      "peak": "9",
+      "isApproximate": false
+    },
+    {
+      "label": "b10_12321",
+      "base": 10,
+      "root": "12321",
+      "squareDigestPrefix": "1234567898765432110",
+      "isPalindrome": "Yes",
+      "peak": "9",
+      "isApproximate": false
+    },
+    {
+      "label": "b10_99",
+      "base": 10,
+      "root": "99",
+      "squareDigestPrefix": "1234567898765432110",
+      "isPalindrome": "Yes",
+      "peak": "9",
+      "isApproximate": false
+    },
+    {
+      "label": "b16_FF",
+      "base": 16,
+      "root": "FF",
+      "squareDigestPrefix": "1234567898765432110",
+      "isPalindrome": "Yes",
+      "peak": "9",
+      "isApproximate": false
+    },
+    {
+      "label": "b2_1011",
+      "base": 2,
+      "root": "1011",
+      "squareDigestPrefix": "1234567898765432110",
+      "isPalindrome": "Yes",
+      "peak": "9",
+      "isApproximate": false
+    },
+    {
+      "label": "b10_1",
+      "base": 10,
+      "root": "1",
+      "squareDigestPrefix": "1234567898765432110",
+      "isPalindrome": "Yes",
+      "peak": "9",
+      "isApproximate": false
+    },
+    {
+      "label": "b10_repunit_9",
+      "base": 10,
+      "root": "111111111",
+      "squareDigestPrefix": "1234567898765432110",
+      "isPalindrome": "Yes",
+      "peak": "9",
+      "isApproximate": false
+    },
+    {
+      "label": "b10_repunit_10",
+      "base": 10,
+      "root": "1111111111",
+      "squareDigestPrefix": "1234567898765432110",
+      "isPalindrome": "Yes",
+      "peak": "9",
+      "isApproximate": false
+    },
+    {
+      "label": "b36_ZZ",
+      "base": 36,
+      "root": "ZZ",
+      "squareDigestPrefix": "1234567898765432110",
+      "isPalindrome": "Yes",
+      "peak": "9",
+      "isApproximate": false
+    }
+  ]
+}

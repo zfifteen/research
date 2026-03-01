@@ -3,13 +3,13 @@
 **Date:** 2026-03-01
 **Scope:** Address 8 remaining implementation gaps from re-audit of `TECH_SPEC.md`
 **Baseline:** 154/154 tests passing, clean build (session 2 final state)
-**Final state:** 167/167 tests passing, clean build, all 8 gaps addressed
+**Final state:** 167/167 unit+property tests passing, 16/16 Playwright tests passing (Chromium), clean build, all 8 gaps addressed
 
 ---
 
 ## Summary
 
-All 8 implementation gaps identified in the 2026-03-01 re-audit have been resolved. Two P1 gaps (preemption semantics, repunit fast-path), five P2 gaps (recovery UI, E2E depth, Playwright config, verify script, cross-browser evidence), and one P3 gap (real-device evidence template) are now addressed.
+All 8 implementation gaps identified in the 2026-03-01 re-audit have been resolved. Two P1 gaps (preemption semantics, repunit fast-path), five P2 gaps (recovery UI, E2E depth, Playwright config, verify script, cross-browser evidence), and one P3 gap (real-device evidence template) are now addressed. `test:e2e` has now been executed in this environment and passes in Chromium.
 
 ---
 
@@ -179,7 +179,7 @@ npx pnpm@9 evidence:determinism
 | `npx pnpm@9 lint` | ✅ Pass | 0 errors, 2 warnings (pre-existing: `_showDebugPanel` unused, `_e` unused) |
 | `npx pnpm@9 test` | ✅ Pass | 167/167 tests passing (9 test files) |
 | `npx pnpm@9 build` | ✅ Pass | 82 modules, PWA precache 12 entries |
-| `npx pnpm@9 test:e2e` | ⏳ Requires browser | Playwright config fixed; webServer uses `npx pnpm@9 preview` |
+| `npx pnpm@9 test:e2e` | ✅ Pass | 16/16 tests passed in Chromium (smoke + determinism-evidence spec) |
 | `npx pnpm@9 verify` | ✅ Pass | Full local gate passes |
 
 ### Test Suite Breakdown
@@ -200,7 +200,7 @@ npx pnpm@9 evidence:determinism
 
 ## Unresolved / Environment-Dependent Items
 
-1. **E2E execution** — The Playwright smoke suite and cross-browser determinism evidence require browser binaries (Chromium, Firefox, WebKit) that are not available in this sandbox. The config and tests are written; execution requires `npx playwright install` followed by `npx pnpm@9 test:e2e` or `npx pnpm@9 evidence:determinism`.
+1. **Cross-browser determinism execution** — Chromium execution is now complete, but full cross-browser evidence still requires Firefox/WebKit browser binaries and runs. Execute `npx playwright install firefox webkit` then `npx pnpm@9 evidence:determinism`.
 
 2. **Real-device smoke** — The `evidence/DEVICE_SMOKE_TEMPLATE.md` checklist must be filled in manually on physical iOS and Android devices by a human tester.
 

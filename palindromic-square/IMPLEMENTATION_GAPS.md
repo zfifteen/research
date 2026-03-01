@@ -21,7 +21,7 @@ Revalidation results:
 - `npx pnpm@9 test`: pass (167/167)
 - `npx pnpm@9 build`: pass
 - `npx pnpm@9 verify`: pass
-- `npx pnpm@9 test:e2e`: fails in this environment due missing Playwright browser executables
+- `npx pnpm@9 test:e2e`: pass (16/16 in Chromium, including determinism-evidence spec)
 
 Release readiness against `TECH_SPEC.md`: **Not ready** (remaining gaps listed below).
 
@@ -32,7 +32,7 @@ Release readiness against `TECH_SPEC.md`: **Not ready** (remaining gaps listed b
 | P1 | §11.2, §12 | Open | `tests/e2e/determinism-evidence.spec.ts:45`, `tests/e2e/determinism-evidence.spec.ts:92-95`, `tests/e2e/determinism-evidence.spec.ts:103-106` | Cross-browser determinism evidence harness does not validate the TECH_SPEC digest contract. It captures rendered square text prefix + UI fields, not canonical SHA-256 digest of required exact fields. | Update cross-browser determinism spec to compute and compare the required digest payload/algorithm from §11.2 (canonical JSON, sorted keys, SHA-256, lowercase hex). |
 | P2 | §12 | Open | `package.json:16-20` | Release-gate command wiring is still incomplete: `verify`/`verify:release` do not include cross-browser determinism checks required by §12. | Add a single release gate command (or CI workflow) that includes typecheck, lint, unit/property tests, E2E smoke, and cross-browser determinism checks. |
 | P2 | §11.3 | Open | `tests/e2e/smoke.spec.ts:113-123`, `tests/e2e/smoke.spec.ts:154-168` | Smoke suite depth improved, but key assertions remain permissive for required scenarios (preview labeling / exact-action blocking). Tests can pass without proving preview state or blocked exports under preview. | Strengthen tests to deterministically enter preview mode and assert exact required outcomes (`Approximate` visible + export buttons disabled). |
-| P3 | §10, §11.4, §12, §15 | Environment-dependent | `npx pnpm@9 test:e2e` failure: missing Playwright browser binaries; `evidence/` only contains template (`DEVICE_SMOKE_TEMPLATE.md`) | Final release evidence remains unproven in this environment: E2E execution, real-device smoke, and offline validation artifacts are not complete. | Install Playwright browsers, execute E2E + determinism runs, and produce dated iOS/Android/offline evidence artifacts. |
+| P3 | §10, §11.4, §12, §15 | Environment-dependent | `npx pnpm@9 test:e2e` now passes (Chromium); `evidence/` has `determinism-chromium.json` + `DEVICE_SMOKE_TEMPLATE.md` only | Final release evidence remains incomplete: cross-browser determinism (Firefox/WebKit), real-device smoke, and offline validation artifacts are still not complete. | Execute cross-browser determinism runs (all required browsers) and produce dated iOS/Android/offline evidence artifacts. |
 
 ## Verified as Met (Current State)
 - Preemption model upgraded to terminate-and-recreate on supersede with stale-result suppression (`src/worker/api.ts`).
@@ -53,10 +53,9 @@ Release readiness against `TECH_SPEC.md`: **Not ready** (remaining gaps listed b
 | `npx pnpm@9 test` | Pass | 167/167 tests |
 | `npx pnpm@9 build` | Pass | Vite + PWA build successful |
 | `npx pnpm@9 verify` | Pass | Local gate script completes |
-| `npx pnpm@9 test:e2e` | Fail (environment) | Missing Playwright browser executable; requires install step |
+| `npx pnpm@9 test:e2e` | Pass | 16/16 tests passed in Chromium (smoke + determinism-evidence) |
 
 ## Environment-Dependent Release Evidence (Open)
-- E2E smoke execution artifacts in a browser-installed environment.
 - Cross-browser determinism evidence artifacts based on the §11.2 digest contract.
 - Filled real-device smoke report (iOS Safari + Android Chrome).
 - Filled offline launch validation evidence.

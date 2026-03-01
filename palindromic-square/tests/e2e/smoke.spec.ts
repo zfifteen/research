@@ -317,8 +317,10 @@ test.describe('PeakGuard E2E Smoke Suite', () => {
     // Should show profile type (desktop in headless Chromium)
     await expect(debugPanel.locator('td:has-text("desktop")')).toBeVisible();
 
-    // Should show override state
-    await expect(debugPanel.locator('td:has-text("No")')).toBeVisible(); // Override active: No
+    // Should show override state in the "Override active" row
+    const overrideRow = debugPanel.locator('tr', { has: page.locator('td', { hasText: 'Override active' }) });
+    await expect(overrideRow).toBeVisible();
+    await expect(overrideRow.locator('td').nth(1)).toHaveText('No');
   });
 
   test('offline launch: service worker registers and app shell loads', async ({ page }) => {
