@@ -1,5 +1,5 @@
 /**
- * Debug panel — performance profile, limits, job timing, memory.
+ * Debug panel — performance profile, limits, job timing, memory, override state.
  * TECH_SPEC Section 9
  */
 import React from 'react';
@@ -13,6 +13,7 @@ export function DebugPanel(): React.ReactElement {
   const jobStatus = useStore((s) => s.jobStatus);
   const jobId = useStore((s) => s.jobId);
   const computeResult = useStore((s) => s.computeResult);
+  const overrideState = useStore((s) => s.overrideState);
 
   const memoryEstimate = (performance as unknown as { memory?: { usedJSHeapSize?: number } })
     ?.memory?.usedJSHeapSize;
@@ -29,8 +30,29 @@ export function DebugPanel(): React.ReactElement {
           </tr>
           <tr>
             <td>Safe digits (exact)</td>
-            <td>{limits.safeDigitsExact}</td>
+            <td>
+              {limits.safeDigitsExact}
+              {overrideState.isOverridden && (
+                <span className="override-badge"> (overridden)</span>
+              )}
+            </td>
           </tr>
+          <tr>
+            <td>Override active</td>
+            <td>{overrideState.isOverridden ? 'Yes' : 'No'}</td>
+          </tr>
+          {overrideState.isOverridden && overrideState.overriddenSafeDigits !== null && (
+            <tr>
+              <td>Override value</td>
+              <td>{overrideState.overriddenSafeDigits} digits</td>
+            </tr>
+          )}
+          {overrideState.isOverridden && overrideState.overriddenAt && (
+            <tr>
+              <td>Override set at</td>
+              <td>{new Date(overrideState.overriddenAt).toLocaleTimeString()}</td>
+            </tr>
+          )}
           <tr>
             <td>Input-to-preview budget</td>
             <td>{limits.inputToPreviewMs} ms</td>

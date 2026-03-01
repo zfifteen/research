@@ -1,19 +1,27 @@
 /**
  * Self-convolution of digit arrays per MATH.md Algorithm B step 1.
  * Uses BigInt for exact integer arithmetic.
+ * Supports cooperative cancellation via periodic checks.
  */
 import type { DigitsLE } from './types';
 
+/** Check interval for cooperative cancellation (every N outer iterations). */
+const CANCEL_CHECK_INTERVAL = 64;
+
 /**
- * Compute raw self-convolution coefficients.
+ * Cancellation-aware self-convolution.
+ * Checks `shouldCancel()` every CANCEL_CHECK_INTERVAL outer iterations.
+ * Throws if cancelled.
+ *
  * raw[k] = sum_{i} a[i] * a[k-i] for valid i ranges.
- * 
  * Input: digits in LE order.
  * Output: raw coefficients array of length 2*m - 1 (or 1 if m=0).
- * 
  * Time: O(m^2)
  */
-export function selfConvolution(digitsLE: DigitsLE): bigint[] {
+export function selfConvolution(
+  digitsLE: DigitsLE,
+  shouldCancel?: () => boolean
+): bigint[] {
   const m = digitsLE.length;
   if (m === 0) return [0n];
 
@@ -21,6 +29,11 @@ export function selfConvolution(digitsLE: DigitsLE): bigint[] {
   const raw: bigint[] = new Array(rawLen).fill(0n) as bigint[];
 
   for (let i = 0; i < m; i++) {
+    // Cooperative cancellation check
+    if (shouldCancel && i % CANCEL_CHECK_INTERVAL === 0 && shouldCancel()) {
+      throw new Error('Job cancelled');
+    }
+
     const ai = BigInt(digitsLE[i]!);
     for (let j = 0; j < m; j++) {
       const aj = BigInt(digitsLE[j]!);

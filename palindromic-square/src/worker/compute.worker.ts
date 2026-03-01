@@ -1,6 +1,8 @@
 /**
  * Compute Web Worker — runs math operations off the main thread.
  * Exposed via Comlink RPC interface per TECH_SPEC Section 8.2.
+ * Uses cooperative cancellation: the hot convolution loop periodically
+ * checks a `cancelled` flag rather than relying on async interrupts.
  */
 import type { ComputeResult, ComputeJobRequest } from '../math/types';
 import { computeExactSquare, computePreviewSquare } from '../math/square';
@@ -8,24 +10,26 @@ import { computeExactSquare, computePreviewSquare } from '../math/square';
 let currentJobId: string | null = null;
 let cancelled = false;
 
+/** Cooperative cancellation callback passed into hot loops. */
+function isCancelled(): boolean {
+  return cancelled;
+}
+
 const workerApi = {
   /**
    * Run a compute job (exact or preview).
+   * The convolution hot loop checks isCancelled() periodically,
+   * enabling preemption even in synchronous O(n²) work.
    */
   compute(request: ComputeJobRequest): ComputeResult {
     currentJobId = request.id;
     cancelled = false;
 
-    // Set up timeout
-    const timeoutId = setTimeout(() => {
-      cancelled = true;
-    }, request.timeoutMs);
-
     try {
       let result: ComputeResult;
 
       if (request.mode === 'exact') {
-        result = computeExactSquare(request.digitsLE, request.base);
+        result = computeExactSquare(request.digitsLE, request.base, isCancelled);
       } else {
         result = computePreviewSquare(request.digitsLE, request.base);
       }
@@ -36,13 +40,13 @@ const workerApi = {
 
       return result;
     } finally {
-      clearTimeout(timeoutId);
       currentJobId = null;
     }
   },
 
   /**
    * Cancel the current running job.
+   * Sets the flag that the cooperative cancellation loop checks.
    */
   cancel(): void {
     cancelled = true;

@@ -1,7 +1,7 @@
 /**
  * Main App component — orchestrates all features.
  */
-import React, { useEffect, useCallback, useRef } from 'react';
+import React, { useEffect, useCallback, useRef, useState } from 'react';
 import { useStore } from '../state/store';
 import { PhaseExplorer } from '../features/explorer/PhaseExplorer';
 import { ConvolutionHeatmap } from '../features/explorer/ConvolutionHeatmap';
@@ -12,9 +12,11 @@ import { Gallery } from '../features/gallery/Gallery';
 import { ExportPanel } from '../features/exports/ExportPanel';
 import { DataManagement } from '../features/data-management/DataManagement';
 import { DebugPanel } from '../features/data-management/DebugPanel';
+import { StartupRecoveryModal, type RecoveryOutcome } from '../features/recovery/StartupRecoveryModal';
 import { submitJob, cancelCurrentJob } from '../worker/api';
 import { parseMSBtoLE, decodeURLState, serializeLEtoMSB } from '../utils/encoding';
 import { detectProfile, runBenchmark, estimateComputeTimeMs } from '../utils/timing';
+import { isRepunit } from '../math/square';
 import { repository } from '../storage/repository';
 import { getDefaultGalleryEntry } from '../features/gallery/galleryData';
 import { v4 as uuid } from 'uuid';
@@ -30,6 +32,74 @@ const TABS: { id: ActiveTab; label: string }[] = [
   { id: 'data', label: 'Data' },
   { id: 'debug', label: 'Debug' },
 ];
+
+/**
+ * FPS monitor — measures real frame rate and triggers auto-abort
+ * when sustained frame drops exceed the profile threshold.
+ * Per TECH_SPEC Section 6.3: desktop <20 FPS for 2s, mobile <15 FPS for 2s.
+ */
+function useFpsMonitor(
+  isRunning: boolean,
+  fpsThreshold: number,
+  durationMs: number,
+  onAutoAbort: () => void
+) {
+  const frameTimesRef = useRef<number[]>([]);
+  const rafRef = useRef<number | null>(null);
+  const lowFpsSinceRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (!isRunning) {
+      // Reset when not computing
+      frameTimesRef.current = [];
+      lowFpsSinceRef.current = null;
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+      return;
+    }
+
+    const measure = (now: number) => {
+      const times = frameTimesRef.current;
+      times.push(now);
+
+      // Keep only the last 1 second of frame times
+      while (times.length > 1 && times[0]! < now - 1000) {
+        times.shift();
+      }
+
+      // Need at least 2 frames to compute FPS
+      if (times.length >= 2) {
+        const fps = (times.length - 1) / ((now - times[0]!) / 1000);
+
+        if (fps < fpsThreshold) {
+          if (lowFpsSinceRef.current === null) {
+            lowFpsSinceRef.current = now;
+          } else if (now - lowFpsSinceRef.current >= durationMs) {
+            // Sustained frame drops — auto abort
+            onAutoAbort();
+            lowFpsSinceRef.current = null;
+            return; // Stop monitoring
+          }
+        } else {
+          lowFpsSinceRef.current = null;
+        }
+      }
+
+      rafRef.current = requestAnimationFrame(measure);
+    };
+
+    rafRef.current = requestAnimationFrame(measure);
+
+    return () => {
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+    };
+  }, [isRunning, fpsThreshold, durationMs, onAutoAbort]);
+}
 
 export function App(): React.ReactElement {
   const base = useStore((s) => s.base);
@@ -58,8 +128,31 @@ export function App(): React.ReactElement {
   const markClean = useStore((s) => s.markClean);
   const setActiveProject = useStore((s) => s.setActiveProject);
   const setProjects = useStore((s) => s.setProjects);
+  const toasts = useStore((s) => s.toasts);
+  const addToast = useStore((s) => s.addToast);
+  const dismissToast = useStore((s) => s.dismissToast);
+
+  // Startup recovery state
+  const [recoveryError, setRecoveryError] = useState<unknown>(null);
+  const [showRecovery, setShowRecovery] = useState(false);
 
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  /** Stores the original createdAt for the active project. */
+  const originalCreatedAtRef = useRef<string | null>(null);
+
+  // Gap 2: FPS auto-abort
+  const handleAutoAbort = useCallback(async () => {
+    await cancelCurrentJob();
+    setJobStatus('cancelled');
+    addToast('Compute cancelled: frame rate dropped below threshold', 'warning');
+  }, [setJobStatus, addToast]);
+
+  useFpsMonitor(
+    jobStatus === 'running',
+    limits.autoAbortFpsTrigger,
+    limits.autoAbortFpsDurationMs,
+    handleAutoAbort
+  );
 
   // Initialization: profile detection, benchmark, first-run, URL state
   useEffect(() => {
@@ -83,7 +176,8 @@ export function App(): React.ReactElement {
           window.location.hash = '';
           return;
         } else {
-          console.warn('Invalid URL state, falling back to default');
+          // Gap 6: Show user-visible toast for invalid URL state
+          addToast('Invalid or unsupported share link. Loading default project.', 'warning');
         }
       }
 
@@ -106,12 +200,14 @@ export function App(): React.ReactElement {
             setRootDigits(latest.rootDigits);
             setProjectName(latest.name);
             setActiveProject(latest.id);
+            // Gap 4: preserve original createdAt
+            originalCreatedAtRef.current = latest.createdAt;
           }
         }
       } catch (e) {
-        console.error('DB initialization error, attempting recovery:', e);
-        const recovery = await repository.attemptRecovery();
-        console.log('Recovery result:', recovery.message);
+        console.error('DB initialization error:', e);
+        setRecoveryError(e);
+        setShowRecovery(true);
       }
     };
 
@@ -125,17 +221,30 @@ export function App(): React.ReactElement {
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(async () => {
       const now = new Date().toISOString();
+      const isExistingProject = !!activeProjectId;
       const id = activeProjectId || uuid();
+
+      // Gap 4: preserve createdAt for existing projects
+      const createdAt = isExistingProject && originalCreatedAtRef.current
+        ? originalCreatedAtRef.current
+        : now;
+
       await repository.saveProject({
         id,
         name: projectName,
-        createdAt: now,
+        createdAt,
         updatedAt: now,
         base,
         rootDigits,
         settings,
         cachedArtifacts: null
       });
+
+      // For new projects, store the createdAt for future saves
+      if (!isExistingProject) {
+        originalCreatedAtRef.current = createdAt;
+      }
+
       setActiveProject(id);
       markClean();
       const projects = await repository.getAllProjects();
@@ -152,13 +261,19 @@ export function App(): React.ReactElement {
     const flush = () => {
       if (isDirty && saveTimerRef.current) {
         clearTimeout(saveTimerRef.current);
-        // Best-effort synchronous-ish save attempt
         const now = new Date().toISOString();
+        const isExistingProject = !!activeProjectId;
         const id = activeProjectId || uuid();
+
+        // Gap 4: preserve createdAt for existing projects
+        const createdAt = isExistingProject && originalCreatedAtRef.current
+          ? originalCreatedAtRef.current
+          : now;
+
         repository.saveProject({
           id,
           name: projectName,
-          createdAt: now,
+          createdAt,
           updatedAt: now,
           base,
           rootDigits,
@@ -183,8 +298,6 @@ export function App(): React.ReactElement {
       const digitsLE = parseMSBtoLE(rootDigits, base);
       const estimatedTime = estimateComputeTimeMs(digitsLE.length, benchmarkCoeff);
 
-      // Determine if we should use preview
-      const actualMode = mode;
       if (mode === 'exact' && digitsLE.length > limits.safeDigitsExact) {
         if (estimatedTime > limits.warningThresholdMs) {
           const proceed = confirm(
@@ -203,7 +316,7 @@ export function App(): React.ReactElement {
       const response = await submitJob(
         base,
         digitsLE,
-        actualMode,
+        mode,
         limits.workerHardTimeoutMs
       );
 
@@ -225,12 +338,25 @@ export function App(): React.ReactElement {
     setJobStatus('cancelled');
   }, [setJobStatus]);
 
-  // Auto-compute on input change (preview for safety)
+  // Auto-compute on input change
+  // Gap 3: gate on BOTH safeDigitsExact AND estimateComputeTimeMs > inputToPreviewMs
+  // Gap 2 (repunit): detect repunit roots and force exact mode for O(1) verdict
   useEffect(() => {
     const timer = setTimeout(() => {
       try {
         const digitsLE = parseMSBtoLE(rootDigits, base);
-        if (digitsLE.length <= limits.safeDigitsExact) {
+        const estimatedTime = estimateComputeTimeMs(digitsLE.length, benchmarkCoeff);
+
+        // Repunit fast-path: always use exact mode since the worker
+        // will detect the repunit and return an O(1) verdict.
+        if (isRepunit(digitsLE)) {
+          handleCompute('exact');
+          return;
+        }
+
+        // Use preview if EITHER the digit count exceeds safe limit
+        // OR the estimated time exceeds the input-to-preview budget
+        if (digitsLE.length <= limits.safeDigitsExact && estimatedTime <= limits.inputToPreviewMs) {
           handleCompute('exact');
         } else {
           handleCompute('preview');
@@ -241,7 +367,36 @@ export function App(): React.ReactElement {
     }, 200);
 
     return () => clearTimeout(timer);
-  }, [base, rootDigits]);
+  }, [base, rootDigits, benchmarkCoeff, limits, handleCompute]);
+
+  // Recovery modal handlers
+  const handleRecoveryRetry = useCallback(async () => {
+    return repository.attemptRecovery();
+  }, []);
+
+  const handleRecoveryClear = useCallback(async () => {
+    await repository.clearAll();
+    await repository.markFirstRunComplete();
+  }, []);
+
+  const handleRecoveryDefaults = useCallback(() => {
+    const sample = getDefaultGalleryEntry();
+    setBase(sample.base);
+    setRootDigits(sample.rootDigits);
+    setProjectName(sample.name);
+  }, [setBase, setRootDigits, setProjectName]);
+
+  const handleRecoveryDismiss = useCallback((outcome: RecoveryOutcome) => {
+    setShowRecovery(false);
+    addToast(
+      `Storage recovery: ${outcome.message}`,
+      outcome.success ? 'info' : 'warning'
+    );
+    // If recovery or clear succeeded, reload projects
+    if (outcome.success && outcome.action !== 'defaults') {
+      repository.getAllProjects().then(setProjects).catch(() => {});
+    }
+  }, [addToast, setProjects]);
 
   const squareDisplay = computeResult
     ? serializeLEtoMSB(computeResult.normalizedDigitsLE, base)
@@ -260,10 +415,33 @@ export function App(): React.ReactElement {
     <div className="app" data-reduced-motion={
       typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
     }>
+      {/* Startup Recovery Modal */}
+      {showRecovery && (
+        <StartupRecoveryModal
+          error={recoveryError}
+          onRetry={handleRecoveryRetry}
+          onClear={handleRecoveryClear}
+          onContinueDefaults={handleRecoveryDefaults}
+          onDismiss={handleRecoveryDismiss}
+        />
+      )}
+
       <header className="app-header">
         <h1>PeakGuard</h1>
         <p className="subtitle">Palindromic Square Phase Transition Explorer</p>
       </header>
+
+      {/* Toast notifications */}
+      {toasts.length > 0 && (
+        <div className="toast-container" role="alert" aria-live="polite">
+          {toasts.map((toast) => (
+            <div key={toast.id} className={`toast toast-${toast.type}`}>
+              <span>{toast.text}</span>
+              <button className="toast-dismiss" onClick={() => dismissToast(toast.id)} aria-label="Dismiss">&times;</button>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Result summary bar */}
       {computeResult && (

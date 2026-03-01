@@ -60,9 +60,29 @@ export function validateNormalizedDigits(digitsLE: DigitsLE, base: Base): boolea
 }
 
 /**
+ * Serialize an object to canonical JSON with lexicographically sorted keys
+ * and no insignificant whitespace, per TECH_SPEC Section 11.2.
+ * Recursively sorts keys at all levels.
+ */
+export function canonicalJSON(obj: unknown): string {
+  if (obj === null || obj === undefined) return JSON.stringify(obj);
+  if (typeof obj !== 'object') return JSON.stringify(obj);
+  if (Array.isArray(obj)) {
+    return '[' + obj.map(canonicalJSON).join(',') + ']';
+  }
+  const record = obj as Record<string, unknown>;
+  const sortedKeys = Object.keys(record).sort();
+  const pairs = sortedKeys.map(
+    (key) => JSON.stringify(key) + ':' + canonicalJSON(record[key])
+  );
+  return '{' + pairs.join(',') + '}';
+}
+
+/**
  * Compute SHA-256 determinism digest per TECH_SPEC Section 11.2.
  * Fields: schemaVersion, base, rootDigits, normalizedSquareDigits, peak, isPalindrome
- * Serialized as canonical JSON with sorted keys, no whitespace.
+ * Serialized as canonical JSON with lexicographically sorted keys, no whitespace.
+ * Digest output: lowercase hex string.
  */
 export async function computeDeterminismDigest(
   base: Base,
@@ -80,8 +100,8 @@ export async function computeDeterminismDigest(
     schemaVersion: 'v1'
   };
 
-  // Canonical JSON: sorted keys, no whitespace
-  const json = JSON.stringify(obj);
+  // Explicit key-sorted canonical JSON serialization
+  const json = canonicalJSON(obj);
   const encoder = new TextEncoder();
   const data = encoder.encode(json);
   const hashBuffer = await crypto.subtle.digest('SHA-256', data);

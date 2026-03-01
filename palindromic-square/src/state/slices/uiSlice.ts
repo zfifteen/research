@@ -1,10 +1,16 @@
 /**
- * UI slice — tabs, panels, animator controls, theme prefs.
+ * UI slice — tabs, panels, animator controls, theme prefs, toast notifications.
  */
 import type { StateCreator } from 'zustand';
 
 export type ActiveTab = 'explorer' | 'builder' | 'animator' | 'guidance' | 'gallery' | 'exports' | 'data' | 'debug';
 export type AnimatorState = 'stopped' | 'playing' | 'paused';
+
+export interface ToastMessage {
+  id: string;
+  text: string;
+  type: 'info' | 'warning' | 'error';
+}
 
 export interface UISlice {
   activeTab: ActiveTab;
@@ -14,6 +20,7 @@ export interface UISlice {
   showDebugPanel: boolean;
   showAdvancedBuilder: boolean;
   sidebarOpen: boolean;
+  toasts: ToastMessage[];
 
   setActiveTab: (tab: ActiveTab) => void;
   setAnimatorState: (state: AnimatorState) => void;
@@ -22,7 +29,11 @@ export interface UISlice {
   toggleDebugPanel: () => void;
   toggleAdvancedBuilder: () => void;
   toggleSidebar: () => void;
+  addToast: (text: string, type: ToastMessage['type']) => void;
+  dismissToast: (id: string) => void;
 }
+
+let toastCounter = 0;
 
 export const createUISlice: StateCreator<UISlice, [], [], UISlice> = (set) => ({
   activeTab: 'explorer',
@@ -32,6 +43,7 @@ export const createUISlice: StateCreator<UISlice, [], [], UISlice> = (set) => ({
   showDebugPanel: false,
   showAdvancedBuilder: false,
   sidebarOpen: true,
+  toasts: [],
 
   setActiveTab: (tab) => set({ activeTab: tab }),
   setAnimatorState: (state) => set({ animatorState: state }),
@@ -39,5 +51,15 @@ export const createUISlice: StateCreator<UISlice, [], [], UISlice> = (set) => ({
   setAnimatorSpeed: (speed) => set({ animatorSpeed: speed }),
   toggleDebugPanel: () => set((s) => ({ showDebugPanel: !s.showDebugPanel })),
   toggleAdvancedBuilder: () => set((s) => ({ showAdvancedBuilder: !s.showAdvancedBuilder })),
-  toggleSidebar: () => set((s) => ({ sidebarOpen: !s.sidebarOpen }))
+  toggleSidebar: () => set((s) => ({ sidebarOpen: !s.sidebarOpen })),
+  addToast: (text, type) => {
+    const id = `toast-${++toastCounter}`;
+    set((s) => ({ toasts: [...s.toasts, { id, text, type }] }));
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => {
+      set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) }));
+    }, 5000);
+  },
+  dismissToast: (id) =>
+    set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) }))
 });

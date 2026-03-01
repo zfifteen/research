@@ -173,14 +173,16 @@ export function ExportPanel(): React.ReactElement {
         <button
           className="btn btn-export"
           onClick={handleExportSVG}
-          disabled={!computeResult}
+          disabled={!isExactReady}
+          title={!isExactReady ? 'Exact computation required for SVG export' : ''}
         >
           Export SVG
         </button>
         <button
           className="btn btn-export"
           onClick={handleExportPNG}
-          disabled={!computeResult}
+          disabled={!isExactReady}
+          title={!isExactReady ? 'Exact computation required for PNG export' : ''}
         >
           Export PNG
         </button>
@@ -195,8 +197,8 @@ export function ExportPanel(): React.ReactElement {
       {isApproximate && computeResult && (
         <div className="export-warning">
           <p>
-            Some exports are blocked while in preview mode. Run exact computation to unlock
-            JSON export, Markdown theorem/snippet, and final palindrome assertion.
+            All exports are blocked while in preview mode. Run exact computation to unlock
+            JSON, Markdown, SVG, and PNG exports.
           </p>
         </div>
       )}
