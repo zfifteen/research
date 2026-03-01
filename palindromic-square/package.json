@@ -13,9 +13,9 @@
     "test:watch": "vitest",
     "test:e2e": "npx playwright test",
     "test:determinism": "vitest run tests/unit/determinism.test.ts",
-    "verify": "npx pnpm@9 typecheck && npx pnpm@9 lint && npx pnpm@9 test && npx pnpm@9 test:determinism && npx pnpm@9 build",
+    "verify": "npx pnpm@9 typecheck && npx pnpm@9 lint && npx pnpm@9 test && npx pnpm@9 test:determinism && npx pnpm@9 build && npx pnpm@9 test:e2e && npx pnpm@9 test:determinism:cross-browser && node scripts/aggregate-determinism.mjs",
     "verify:local": "npx pnpm@9 typecheck && npx pnpm@9 lint && npx pnpm@9 test && npx pnpm@9 build",
-    "verify:release": "npx pnpm@9 typecheck && npx pnpm@9 lint && npx pnpm@9 test && npx pnpm@9 test:determinism && npx pnpm@9 build && npx pnpm@9 test:e2e",
+    "verify:release": "npx pnpm@9 verify",
     "test:determinism:cross-browser": "npx playwright test --config=playwright.determinism.config.ts",
     "evidence:determinism": "npx pnpm@9 build && npx pnpm@9 test:determinism:cross-browser && node scripts/aggregate-determinism.mjs"
   },

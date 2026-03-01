@@ -1,27 +1,15 @@
 /**
- * Cross-browser determinism verification script.
+ * Cross-browser determinism verification per TECH_SPEC §11.2.
  *
- * Runs the PeakGuard determinism digest corpus across supported browsers
- * (Chromium, Firefox, WebKit) and generates a structured JSON report
- * with per-browser digest outputs and environment metadata.
- *
- * Usage:
- *   npx playwright test tests/e2e/determinism-evidence.spec.ts --reporter=json
- *
- * Output:
- *   determinism-evidence-report.json in the project root.
- *
- * Per TECH_SPEC §11.2, §12: cross-browser determinism must be proven
- * with matching digests across all supported desktop browsers.
+ * This spec computes the required SHA-256 digest from exact-mode payload fields:
+ * schemaVersion, base, rootDigits, normalizedSquareDigits, peak, isPalindrome.
+ * Digest input serialization uses canonical key-sorted JSON, output lowercase hex.
  */
-import { test, expect } from '@playwright/test';
-import * as fs from 'fs';
-import * as path from 'path';
+import { test, expect, type Page } from '@playwright/test';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import { createHash } from 'node:crypto';
 
-/**
- * Seeded test corpus — matches the unit determinism test suite inputs.
- * Each entry has a base, root (MSB string), and the expected canonical digest.
- */
 const CORPUS = [
   { label: 'b10_111', base: 10, root: '111' },
   { label: 'b10_12321', base: 10, root: '12321' },
@@ -32,33 +20,98 @@ const CORPUS = [
   { label: 'b10_repunit_9', base: 10, root: '111111111' },
   { label: 'b10_repunit_10', base: 10, root: '1111111111' },
   { label: 'b36_ZZ', base: 36, root: 'ZZ' },
-];
+] as const;
+
+interface ExportPayload {
+  schemaVersion: string;
+  project: {
+    base: number;
+    rootDigits: string;
+  };
+  result: {
+    mode: 'preview' | 'exact';
+    isApproximate: boolean;
+    normalizedSquareDigits: string;
+    peak: string;
+    isPalindrome: boolean | 'indeterminate';
+  };
+}
+
+interface DeterminismInput {
+  schemaVersion: 'v1';
+  base: number;
+  rootDigits: string;
+  normalizedSquareDigits: string;
+  peak: string;
+  isPalindrome: boolean;
+}
+
+interface CorpusResult {
+  label: string;
+  base: number;
+  root: string;
+  determinismInput: DeterminismInput;
+  determinismDigest: string;
+}
 
 interface BrowserResult {
   browser: string;
   userAgent: string;
   timestamp: string;
-  results: {
-    label: string;
-    base: number;
-    root: string;
-    squareDigestPrefix: string;
-    isPalindrome: string;
-    peak: string;
-    isApproximate: boolean;
-  }[];
+  results: CorpusResult[];
 }
 
-// Collect results across browsers — each project (Chromium/Firefox/WebKit)
-// runs this test and appends to a shared report file.
-test.describe('Cross-browser determinism evidence', () => {
+function encodeState(base: number, root: string): string {
+  return Buffer.from(JSON.stringify({ v: 1, b: base, r: root }), 'utf8').toString('base64');
+}
 
+function canonicalJSON(obj: unknown): string {
+  if (obj === null || obj === undefined) return JSON.stringify(obj);
+  if (typeof obj !== 'object') return JSON.stringify(obj);
+  if (Array.isArray(obj)) {
+    return '[' + obj.map(canonicalJSON).join(',') + ']';
+  }
+  const record = obj as Record<string, unknown>;
+  const sortedKeys = Object.keys(record).sort();
+  const pairs = sortedKeys.map((key) => JSON.stringify(key) + ':' + canonicalJSON(record[key]));
+  return '{' + pairs.join(',') + '}';
+}
+
+function computeDigest(input: DeterminismInput): string {
+  const canonical = canonicalJSON(input);
+  return createHash('sha256').update(Buffer.from(canonical, 'utf8')).digest('hex');
+}
+
+async function readDownloadAsText(page: Page): Promise<string> {
+  const exportButton = page.locator('button:has-text("Export JSON")');
+  await expect(exportButton).toBeEnabled({ timeout: 15000 });
+
+  const [download] = await Promise.all([
+    page.waitForEvent('download'),
+    exportButton.click()
+  ]);
+
+  const stream = await download.createReadStream();
+  if (stream) {
+    const chunks: Buffer[] = [];
+    for await (const chunk of stream) {
+      chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+    }
+    return Buffer.concat(chunks).toString('utf8');
+  }
+
+  const downloadPath = await download.path();
+  if (!downloadPath) {
+    throw new Error('Could not access downloaded JSON payload');
+  }
+  return fs.readFileSync(downloadPath, 'utf8');
+}
+
+test.describe('Cross-browser determinism evidence', () => {
   test('compute determinism corpus and record digests', async ({ page, browserName }) => {
     await page.goto('/');
     await expect(page.locator('h1')).toHaveText('PeakGuard');
-
-    // Wait for app to initialize
-    await page.waitForTimeout(2000);
+    await expect(page.locator('.result-summary')).toBeVisible({ timeout: 15000 });
 
     const userAgent = await page.evaluate(() => navigator.userAgent);
 
@@ -70,60 +123,61 @@ test.describe('Cross-browser determinism evidence', () => {
     };
 
     for (const entry of CORPUS) {
-      // Use the app's compute pipeline via URL state injection
-      const payload = btoa(JSON.stringify({ v: 1, b: entry.base, r: entry.root }));
+      const payload = encodeState(entry.base, entry.root);
+      // URL-state hydration is processed at app startup, so force a full remount.
+      await page.goto('about:blank');
       await page.goto(`/#state=${payload}`);
-      await page.waitForTimeout(500);
 
-      // Wait for result summary to appear
+      await expect(page.locator('h1')).toHaveText('PeakGuard');
       await expect(page.locator('.result-summary')).toBeVisible({ timeout: 15000 });
+      await expect(page.locator('.result-summary .summary-item').first()).toContainText(entry.root.toUpperCase());
 
-      // Extract results from the page
-      const result = await page.evaluate(() => {
-        const summary = document.querySelector('.result-summary');
-        if (!summary) return null;
+      // Force exact mode so digest input always follows TECH_SPEC §11.2 exact contract.
+      await page.click('button:has-text("Compute Exact")');
+      await expect(page.locator('.result-summary .approx-badge')).toHaveCount(0, { timeout: 15000 });
 
-        const peakEl = summary.querySelector('.summary-item:nth-child(3)');
-        const verdictEl = summary.querySelector('.verdict-display');
-        const badgeEl = summary.querySelector('.approx-badge');
-        const squareEl = summary.querySelector('.summary-item:nth-child(2) code');
+      await page.click('button[role="tab"]:has-text("Export")');
+      const exportText = await readDownloadAsText(page);
+      const exported = JSON.parse(exportText) as ExportPayload;
 
-        return {
-          squareDigestPrefix: squareEl?.textContent?.slice(0, 40) ?? '',
-          isPalindrome: verdictEl?.textContent?.replace('Palindrome:', '').trim() ?? 'unknown',
-          peak: peakEl?.textContent?.replace('Peak:', '').trim() ?? 'unknown',
-          isApproximate: !!badgeEl
-        };
-      });
+      expect(exported.schemaVersion).toBe('v1');
+      expect(exported.project.base).toBe(entry.base);
+      expect(exported.project.rootDigits).toBe(entry.root.toUpperCase());
+      expect(exported.result.mode).toBe('exact');
+      expect(exported.result.isApproximate).toBe(false);
+      expect(typeof exported.result.isPalindrome).toBe('boolean');
+
+      const determinismInput: DeterminismInput = {
+        schemaVersion: 'v1',
+        base: exported.project.base,
+        rootDigits: exported.project.rootDigits,
+        normalizedSquareDigits: exported.result.normalizedSquareDigits,
+        peak: exported.result.peak,
+        isPalindrome: exported.result.isPalindrome as boolean
+      };
+
+      const determinismDigest = computeDigest(determinismInput);
+      expect(determinismDigest).toMatch(/^[0-9a-f]{64}$/);
 
       browserResult.results.push({
         label: entry.label,
         base: entry.base,
         root: entry.root,
-        squareDigestPrefix: result?.squareDigestPrefix ?? 'ERROR',
-        isPalindrome: result?.isPalindrome ?? 'ERROR',
-        peak: result?.peak ?? 'ERROR',
-        isApproximate: result?.isApproximate ?? false
+        determinismInput,
+        determinismDigest
       });
     }
 
-    // Write partial report for this browser
+    expect(browserResult.results).toHaveLength(CORPUS.length);
+    expect(new Set(browserResult.results.map((r) => r.label)).size).toBe(CORPUS.length);
+
     const reportDir = path.join(process.cwd(), 'evidence');
-    if (!fs.existsSync(reportDir)) {
-      fs.mkdirSync(reportDir, { recursive: true });
-    }
+    fs.mkdirSync(reportDir, { recursive: true });
+    fs.writeFileSync(
+      path.join(reportDir, `determinism-${browserName}.json`),
+      JSON.stringify(browserResult, null, 2)
+    );
 
-    const reportPath = path.join(reportDir, `determinism-${browserName}.json`);
-    fs.writeFileSync(reportPath, JSON.stringify(browserResult, null, 2));
-
-    // Log for CI visibility
     console.log(`[determinism] ${browserName}: ${browserResult.results.length} corpus entries recorded`);
-
-    // Basic assertion: all entries should have non-error values
-    for (const r of browserResult.results) {
-      expect(r.squareDigestPrefix).not.toBe('ERROR');
-      expect(r.isPalindrome).not.toBe('ERROR');
-      expect(r.peak).not.toBe('ERROR');
-    }
   });
 });

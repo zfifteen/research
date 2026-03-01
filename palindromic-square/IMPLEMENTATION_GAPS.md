@@ -1,7 +1,7 @@
-# PeakGuard v1 Remaining Gaps vs `docs/TECH_SPEC.md` (Post-Remediation Revalidation)
+# PeakGuard v1 Remaining Gaps vs `docs/TECH_SPEC.md` (Post-Implementation Revalidation)
 
 Assessment date: 2026-03-01  
-Assessment basis: revalidation after code updates and new `docs/REMEDIATION_REPORT.md`.
+Assessment basis: revalidation after implementation completion and verification reruns.
 
 ## Scope Policy
 - Include both code-level gaps and environment-dependent release-evidence gaps.
@@ -13,56 +13,45 @@ Assessment basis: revalidation after code updates and new `docs/REMEDIATION_REPO
 - `Environment-dependent`: Requires browser/device execution evidence.
 
 ## Executive Summary
-Current state improved materially from the prior audit. Most previously-open implementation gaps are now closed.
+Implementation and automation gaps identified in the prior re-audit are now closed:
+- Repunit preview contract is enforced at app and worker boundaries.
+- E2E preview/export assertions are now deterministic and strict.
+- Determinism evidence now uses required §11.2 canonical digest contract.
+- `verify` is now a full release-blocking gate including E2E + cross-browser determinism + aggregation.
 
-Revalidation results:
-- `npx pnpm@9 typecheck`: pass
-- `npx pnpm@9 lint`: pass (0 errors, 2 warnings)
-- `npx pnpm@9 test`: pass (167/167)
-- `npx pnpm@9 build`: pass
-- `npx pnpm@9 verify`: pass
-- `npx pnpm@9 test:e2e`: pass (16/16 in Chromium, including determinism-evidence spec)
-
-Release readiness against `TECH_SPEC.md`: **Not ready** (remaining gaps listed below).
+Current release readiness: **not fully release-ready** due to remaining real-device/offline evidence requirement.
 
 ## Remaining Gaps Matrix (Open)
 | Priority | TECH_SPEC Ref | Status | Evidence | Gap / Impact | Recommended Fix |
 |---|---|---|---|---|---|
-| P1 | §8.3 | Open | `src/math/square.ts:20-22`, `src/math/square.ts:39`, `src/app/App.tsx:296-321`, `src/math/square.ts:161` | Repunit fast-path is partially integrated, but contract is still incomplete. The helper is documented as O(1) and “without invoking O(n²) convolution,” yet calls `selfConvolution`. Also, explicit `Preview` requests can still return `indeterminate` for repunit inputs (preview path unchanged). | Enforce repunit exact classification in `handleCompute()` regardless of requested mode, and align fast-path implementation/comments with actual algorithm (true O(1) verdict path for classification). |
-| P1 | §11.2, §12 | Open | `tests/e2e/determinism-evidence.spec.ts:45`, `tests/e2e/determinism-evidence.spec.ts:92-95`, `tests/e2e/determinism-evidence.spec.ts:103-106` | Cross-browser determinism evidence harness does not validate the TECH_SPEC digest contract. It captures rendered square text prefix + UI fields, not canonical SHA-256 digest of required exact fields. | Update cross-browser determinism spec to compute and compare the required digest payload/algorithm from §11.2 (canonical JSON, sorted keys, SHA-256, lowercase hex). |
-| P2 | §12 | Open | `package.json:16-20` | Release-gate command wiring is still incomplete: `verify`/`verify:release` do not include cross-browser determinism checks required by §12. | Add a single release gate command (or CI workflow) that includes typecheck, lint, unit/property tests, E2E smoke, and cross-browser determinism checks. |
-| P2 | §11.3 | Open | `tests/e2e/smoke.spec.ts:113-123`, `tests/e2e/smoke.spec.ts:154-168` | Smoke suite depth improved, but key assertions remain permissive for required scenarios (preview labeling / exact-action blocking). Tests can pass without proving preview state or blocked exports under preview. | Strengthen tests to deterministically enter preview mode and assert exact required outcomes (`Approximate` visible + export buttons disabled). |
-| P3 | §10, §11.4, §12, §15 | Environment-dependent | `npx pnpm@9 test:e2e` now passes (Chromium); `evidence/` has `determinism-chromium.json` + `DEVICE_SMOKE_TEMPLATE.md` only | Final release evidence remains incomplete: cross-browser determinism (Firefox/WebKit), real-device smoke, and offline validation artifacts are still not complete. | Execute cross-browser determinism runs (all required browsers) and produce dated iOS/Android/offline evidence artifacts. |
+| P3 | §10, §11.4, §15 | Environment-dependent | No completed physical-device evidence artifacts yet in `evidence/DEVICE_SMOKE_TEMPLATE.md` | Required real-device smoke and offline validation evidence is still missing for final sign-off. | Execute and record iOS Safari + Android Chrome real-device smoke (including offline launch evidence), then attach dated artifacts/sign-off notes. |
 
 ## Verified as Met (Current State)
-- Preemption model upgraded to terminate-and-recreate on supersede with stale-result suppression (`src/worker/api.ts`).
-- Startup recovery now has explicit user cleanup choices via modal (`src/features/recovery/StartupRecoveryModal.tsx`, `src/app/App.tsx`).
-- Playwright server command no longer requires global `pnpm` (`playwright.config.ts`).
-- Core remediation baseline remains healthy:
-  - Auto-save timestamp preservation
-  - Export blocking in preview mode
-  - URL-state warning toasts
-  - Migration scaffolding/tests
-  - Determinism serializer and unit digest tests
+- Repunit explicit-preview path now resolves as exact (`isPalindrome: true|false`) at both app entrypoint and worker boundary (`src/app/App.tsx`, `src/worker/compute.worker.ts`, `src/math/square.ts`).
+- E2E smoke suite now has strict preview/export-blocking assertions and explicit repunit preview behavior checks (`tests/e2e/smoke.spec.ts`).
+- Cross-browser determinism evidence computes TECH_SPEC §11.2 digest fields from exact JSON export payloads (`tests/e2e/determinism-evidence.spec.ts`).
+- Determinism aggregation now validates digest shape, corpus consistency, duplicate/missing labels, and cross-browser equality (`scripts/aggregate-determinism.mjs`).
+- `verify` now runs all release-blocking automated checks in one command (`package.json`).
+- Previously remediated items remain intact: preemption semantics, startup recovery modal, Playwright `pnpm` boot compatibility, migration scaffolding, carry/invariant/determinism unit coverage.
 
 ## Validation Execution Snapshot (2026-03-01)
 | Command | Result | Notes |
 |---|---|---|
 | `npx pnpm@9 typecheck` | Pass | 0 TypeScript errors |
-| `npx pnpm@9 lint` | Pass with warnings | 0 errors, 2 warnings |
+| `npx pnpm@9 lint` | Pass with warnings | 0 errors, 2 warnings (pre-existing unused symbols) |
 | `npx pnpm@9 test` | Pass | 167/167 tests |
 | `npx pnpm@9 build` | Pass | Vite + PWA build successful |
-| `npx pnpm@9 verify` | Pass | Local gate script completes |
-| `npx pnpm@9 test:e2e` | Pass | 16/16 tests passed in Chromium (smoke + determinism-evidence) |
+| `npx pnpm@9 test:e2e` | Pass | 17/17 tests passed in Chromium |
+| `npx pnpm@9 test:determinism:cross-browser` | Pass | 3/3 (Chromium, Firefox, WebKit) |
+| `node scripts/aggregate-determinism.mjs` | Pass | 9/9 corpus labels matched across browsers |
+| `npx pnpm@9 verify` | Pass | Full release-blocking automated gate passes end-to-end |
 
 ## Environment-Dependent Release Evidence (Open)
-- Cross-browser determinism evidence artifacts based on the §11.2 digest contract.
-- Filled real-device smoke report (iOS Safari + Android Chrome).
-- Filled offline launch validation evidence.
+- Complete `evidence/DEVICE_SMOKE_TEMPLATE.md` with dated physical-device runs for:
+  - iOS Safari
+  - Android Chrome
+  - Offline launch validation on both devices
 
-## Priority Remediation Order
-1. Close determinism contract gap in cross-browser evidence tooling.
-2. Complete repunit fast-path contract for explicit preview requests and align O(1) claim.
-3. Strengthen E2E assertions for preview/blocked-export requirements.
-4. Wire a complete release-gate command/CI path including cross-browser determinism.
-5. Produce browser/device evidence artifacts.
+## Readiness
+- **Engineering readiness (code + automated gates): Ready**
+- **Final release readiness per TECH_SPEC §15: Pending real-device/offline evidence completion**

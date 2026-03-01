@@ -5,7 +5,7 @@
  * checks a `cancelled` flag rather than relying on async interrupts.
  */
 import type { ComputeResult, ComputeJobRequest } from '../math/types';
-import { computeExactSquare, computePreviewSquare } from '../math/square';
+import { computeExactSquare, computePreviewSquare, isRepunit } from '../math/square';
 
 let currentJobId: string | null = null;
 let cancelled = false;
@@ -27,8 +27,12 @@ const workerApi = {
 
     try {
       let result: ComputeResult;
+      // Guard at worker boundary: repunits must always use exact classification.
+      const effectiveMode = request.mode === 'preview' && isRepunit(request.digitsLE)
+        ? 'exact'
+        : request.mode;
 
-      if (request.mode === 'exact') {
+      if (effectiveMode === 'exact') {
         result = computeExactSquare(request.digitsLE, request.base, isCancelled);
       } else {
         result = computePreviewSquare(request.digitsLE, request.base);

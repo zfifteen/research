@@ -19,6 +19,10 @@
  */
 import { test, expect } from '@playwright/test';
 
+function encodeState(base: number, root: string): string {
+  return Buffer.from(JSON.stringify({ v: 1, b: base, r: root }), 'utf8').toString('base64');
+}
+
 test.describe('PeakGuard E2E Smoke Suite', () => {
 
   test('first-run gallery load and auto-compute produces result', async ({ page }) => {
@@ -85,52 +89,46 @@ test.describe('PeakGuard E2E Smoke Suite', () => {
   });
 
   test('preview mode shows Approximate badge', async ({ page }) => {
-    await page.goto('/');
-
-    // Wait for initial computation to settle
+    // Deterministic non-repunit input.
+    const payload = encodeState(10, '12');
+    await page.goto(`/#state=${payload}`);
+    await expect(page.locator('h1')).toHaveText('PeakGuard');
     await expect(page.locator('.result-summary')).toBeVisible({ timeout: 15000 });
 
-    // We need a large input that forces preview mode.
-    // Navigate to Builder and enter a large root to trigger preview.
-    await page.click('button[role="tab"]:has-text("Builder")');
-    await expect(page.locator('.panel')).toBeVisible({ timeout: 5000 });
-
-    // Try to find the root input field and enter a very large number
-    const rootInput = page.locator('input[data-testid="root-input"], input.root-input, input[type="text"]').first();
-    if (await rootInput.isVisible()) {
-      await rootInput.fill('1'.repeat(200));
-      // Wait for auto-compute to fire in preview mode
-      await page.waitForTimeout(500);
-    }
-
-    // Click Preview button explicitly
-    await page.click('button[role="tab"]:has-text("Explorer")');
+    // Explicit preview request should yield approximate result for non-repunits.
     await page.click('button:has-text("Preview")');
-
-    // Wait for computation
-    await page.waitForTimeout(2000);
-
-    // For a repunit input, the fast-path should kick in and return exact
-    // (so no Approximate badge for repunits). For this test we verify
-    // the badge mechanism works — if the result is approximate, badge shows;
-    // if exact (repunit fast-path), no badge.
     const summary = page.locator('.result-summary');
     await expect(summary).toBeVisible({ timeout: 10000 });
+    await expect(summary.locator('.approx-badge')).toBeVisible();
 
-    // Verify that the verdict-display is present and contains a real verdict
-    const verdictDisplay = summary.locator('.verdict-display');
-    await expect(verdictDisplay).toBeVisible();
+    // Preview mode must show an indeterminate verdict.
+    await expect(summary.locator('.verdict-display')).toContainText('Unknown');
+  });
+
+  test('repunit explicit preview request stays exact (no Approximate badge)', async ({ page }) => {
+    const payload = encodeState(10, '11111111111111111111');
+    await page.goto(`/#state=${payload}`);
+    await expect(page.locator('h1')).toHaveText('PeakGuard');
+    await expect(page.locator('.result-summary')).toBeVisible({ timeout: 15000 });
+
+    // Repunits must bypass preview semantics and remain exact.
+    await page.click('button:has-text("Preview")');
+
+    const summary = page.locator('.result-summary');
+    await expect(summary).toBeVisible({ timeout: 10000 });
+    await expect(summary.locator('.approx-badge')).toHaveCount(0);
+    await expect(summary.locator('.verdict-display')).toContainText(/Yes|No/);
   });
 
   test('export buttons are disabled in preview mode (exact-action blocking)', async ({ page }) => {
-    await page.goto('/');
-
-    // Wait for initial compute
+    const payload = encodeState(10, '12');
+    await page.goto(`/#state=${payload}`);
+    await expect(page.locator('h1')).toHaveText('PeakGuard');
     await expect(page.locator('.result-summary')).toBeVisible({ timeout: 15000 });
 
-    // Click Preview to force preview mode
+    // Deterministically enter preview mode with non-repunit input.
     await page.click('button:has-text("Preview")');
-    await page.waitForTimeout(2000);
+    await expect(page.locator('.result-summary .approx-badge')).toBeVisible({ timeout: 10000 });
 
     // Navigate to Export tab
     await page.click('button[role="tab"]:has-text("Export")');
@@ -146,26 +144,11 @@ test.describe('PeakGuard E2E Smoke Suite', () => {
     await expect(mdBtn).toBeVisible();
     await expect(svgBtn).toBeVisible();
     await expect(pngBtn).toBeVisible();
-
-    // For small default inputs, auto-compute runs exact mode → exports enabled.
-    // For preview-forced computations, exports should be disabled.
-    // We verify the mechanism exists: buttons have disabled attr when isApproximate.
-    // After exact auto-compute, they should be enabled:
-    const isDisabled = await jsonBtn.isDisabled();
-    // Either they're disabled (preview) or enabled (exact) — both are valid
-    // depending on auto-compute. The important thing is the mechanism works.
-    expect(typeof isDisabled).toBe('boolean');
-
-    // If we're in exact mode (small input), verify exports ARE enabled
-    if (!isDisabled) {
-      await expect(jsonBtn).toBeEnabled();
-      await expect(mdBtn).toBeEnabled();
-      await expect(svgBtn).toBeEnabled();
-      await expect(pngBtn).toBeEnabled();
-    } else {
-      // If in preview, verify the blocking warning is shown
-      await expect(page.locator('.export-warning')).toBeVisible();
-    }
+    await expect(jsonBtn).toBeDisabled();
+    await expect(mdBtn).toBeDisabled();
+    await expect(svgBtn).toBeDisabled();
+    await expect(pngBtn).toBeDisabled();
+    await expect(page.locator('.export-warning')).toBeVisible();
   });
 
   test('search guidance renders threshold messaging', async ({ page }) => {

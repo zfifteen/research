@@ -296,9 +296,12 @@ export function App(): React.ReactElement {
   const handleCompute = useCallback(async (mode: 'preview' | 'exact') => {
     try {
       const digitsLE = parseMSBtoLE(rootDigits, base);
+      const repunitInput = isRepunit(digitsLE);
+      // TECH_SPEC §8.3: repunit classification should bypass preview.
+      const effectiveMode: 'preview' | 'exact' = repunitInput ? 'exact' : mode;
       const estimatedTime = estimateComputeTimeMs(digitsLE.length, benchmarkCoeff);
 
-      if (mode === 'exact' && digitsLE.length > limits.safeDigitsExact) {
+      if (effectiveMode === 'exact' && !repunitInput && digitsLE.length > limits.safeDigitsExact) {
         if (estimatedTime > limits.warningThresholdMs) {
           const proceed = confirm(
             `This computation may take ~${(estimatedTime / 1000).toFixed(1)}s. ` +
@@ -316,7 +319,7 @@ export function App(): React.ReactElement {
       const response = await submitJob(
         base,
         digitsLE,
-        mode,
+        effectiveMode,
         limits.workerHardTimeoutMs
       );
 

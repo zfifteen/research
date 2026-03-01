@@ -1,0 +1,133 @@
+{
+  "browser": "firefox",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0.1) Gecko/20100101 Firefox/146.0.1",
+  "timestamp": "2026-03-01T08:24:19.819Z",
+  "results": [
+    {
+      "label": "b10_111",
+      "base": 10,
+      "root": "111",
+      "determinismInput": {
+        "schemaVersion": "v1",
+        "base": 10,
+        "rootDigits": "111",
+        "normalizedSquareDigits": "12321",
+        "peak": "3",
+        "isPalindrome": true
+      },
+      "determinismDigest": "0a5d2f7ed231b4ee4f57ee6aebf798568f28c72e9086b565e29a71f9eecc83bb"
+    },
+    {
+      "label": "b10_12321",
+      "base": 10,
+      "root": "12321",
+      "determinismInput": {
+        "schemaVersion": "v1",
+        "base": 10,
+        "rootDigits": "12321",
+        "normalizedSquareDigits": "151807041",
+        "peak": "19",
+        "isPalindrome": false
+      },
+      "determinismDigest": "e581270f703c6b5b0636d4f00098497e59ed4d979cd4926b00523ef8b6248590"
+    },
+    {
+      "label": "b10_99",
+      "base": 10,
+      "root": "99",
+      "determinismInput": {
+        "schemaVersion": "v1",
+        "base": 10,
+        "rootDigits": "99",
+        "normalizedSquareDigits": "9801",
+        "peak": "162",
+        "isPalindrome": false
+      },
+      "determinismDigest": "a49a3682e48fd0fa5747d9195b91d2b8a730000e2d788c0ecc074e7b7ec61a2f"
+    },
+    {
+      "label": "b16_FF",
+      "base": 16,
+      "root": "FF",
+      "determinismInput": {
+        "schemaVersion": "v1",
+        "base": 16,
+        "rootDigits": "FF",
+        "normalizedSquareDigits": "FE01",
+        "peak": "450",
+        "isPalindrome": false
+      },
+      "determinismDigest": "28d2a46c15705ba42c8fb6ba1a7743dd94231f4a9b25a1d35a0ab4d255de9dd5"
+    },
+    {
+      "label": "b2_1011",
+      "base": 2,
+      "root": "1011",
+      "determinismInput": {
+        "schemaVersion": "v1",
+        "base": 2,
+        "rootDigits": "1011",
+        "normalizedSquareDigits": "1111001",
+        "peak": "2",
+        "isPalindrome": false
+      },
+      "determinismDigest": "c67af05561e0e248ce04e937b7db9e118c8cc591ff4a1f4ac14311e3ea779f13"
+    },
+    {
+      "label": "b10_1",
+      "base": 10,
+      "root": "1",
+      "determinismInput": {
+        "schemaVersion": "v1",
+        "base": 10,
+        "rootDigits": "1",
+        "normalizedSquareDigits": "1",
+        "peak": "1",
+        "isPalindrome": true
+      },
+      "determinismDigest": "709421e8299bd153b82cfba0a6eab9ee87a887870bc042e09d1e887617688d46"
+    },
+    {
+      "label": "b10_repunit_9",
+      "base": 10,
+      "root": "111111111",
+      "determinismInput": {
+        "schemaVersion": "v1",
+        "base": 10,
+        "rootDigits": "111111111",
+        "normalizedSquareDigits": "12345678987654321",
+        "peak": "9",
+        "isPalindrome": true
+      },
+      "determinismDigest": "77d51be88d965877972bc2556da45a269719f00a035f0c8f4617a346d2906b85"
+    },
+    {
+      "label": "b10_repunit_10",
+      "base": 10,
+      "root": "1111111111",
+      "determinismInput": {
+        "schemaVersion": "v1",
+        "base": 10,
+        "rootDigits": "1111111111",
+        "normalizedSquareDigits": "1234567900987654321",
+        "peak": "10",
+        "isPalindrome": false
+      },
+      "determinismDigest": "16d7a6aa98e4b50d0542d5daaf25fe168ff99fbf696eca624dcdbc9601ecd6fe"
+    },
+    {
+      "label": "b36_ZZ",
+      "base": 36,
+      "root": "ZZ",
+      "determinismInput": {
+        "schemaVersion": "v1",
+        "base": 36,
+        "rootDigits": "ZZ",
+        "normalizedSquareDigits": "ZY01",
+        "peak": "2450",
+        "isPalindrome": false
+      },
+      "determinismDigest": "4495d851377a0ce4f0ea23380a7d8540ff5ffffee760dd64b036a6b190e0af88"
+    }
+  ]
+}

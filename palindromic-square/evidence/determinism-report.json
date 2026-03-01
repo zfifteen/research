@@ -1,0 +1,188 @@
+{
+  "generatedAt": "2026-03-01T07:53:25.549Z",
+  "browsersCompared": [
+    {
+      "browser": "chromium",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.7632.6 Safari/537.36",
+      "timestamp": "2026-03-01T07:53:07.019Z"
+    },
+    {
+      "browser": "firefox",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0.1) Gecko/20100101 Firefox/146.0.1",
+      "timestamp": "2026-03-01T07:53:13.788Z"
+    },
+    {
+      "browser": "webkit",
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15",
+      "timestamp": "2026-03-01T07:53:20.923Z"
+    }
+  ],
+  "overallPass": true,
+  "totalCorpusEntries": 9,
+  "matchingEntries": 9,
+  "validationErrors": [],
+  "comparisons": [
+    {
+      "label": "b10_1",
+      "match": true,
+      "details": [
+        {
+          "browser": "chromium",
+          "determinismDigest": "709421e8299bd153b82cfba0a6eab9ee87a887870bc042e09d1e887617688d46"
+        },
+        {
+          "browser": "firefox",
+          "determinismDigest": "709421e8299bd153b82cfba0a6eab9ee87a887870bc042e09d1e887617688d46"
+        },
+        {
+          "browser": "webkit",
+          "determinismDigest": "709421e8299bd153b82cfba0a6eab9ee87a887870bc042e09d1e887617688d46"
+        }
+      ]
+    },
+    {
+      "label": "b10_111",
+      "match": true,
+      "details": [
+        {
+          "browser": "chromium",
+          "determinismDigest": "0a5d2f7ed231b4ee4f57ee6aebf798568f28c72e9086b565e29a71f9eecc83bb"
+        },
+        {
+          "browser": "firefox",
+          "determinismDigest": "0a5d2f7ed231b4ee4f57ee6aebf798568f28c72e9086b565e29a71f9eecc83bb"
+        },
+        {
+          "browser": "webkit",
+          "determinismDigest": "0a5d2f7ed231b4ee4f57ee6aebf798568f28c72e9086b565e29a71f9eecc83bb"
+        }
+      ]
+    },
+    {
+      "label": "b10_12321",
+      "match": true,
+      "details": [
+        {
+          "browser": "chromium",
+          "determinismDigest": "e581270f703c6b5b0636d4f00098497e59ed4d979cd4926b00523ef8b6248590"
+        },
+        {
+          "browser": "firefox",
+          "determinismDigest": "e581270f703c6b5b0636d4f00098497e59ed4d979cd4926b00523ef8b6248590"
+        },
+        {
+          "browser": "webkit",
+          "determinismDigest": "e581270f703c6b5b0636d4f00098497e59ed4d979cd4926b00523ef8b6248590"
+        }
+      ]
+    },
+    {
+      "label": "b10_99",
+      "match": true,
+      "details": [
+        {
+          "browser": "chromium",
+          "determinismDigest": "a49a3682e48fd0fa5747d9195b91d2b8a730000e2d788c0ecc074e7b7ec61a2f"
+        },
+        {
+          "browser": "firefox",
+          "determinismDigest": "a49a3682e48fd0fa5747d9195b91d2b8a730000e2d788c0ecc074e7b7ec61a2f"
+        },
+        {
+          "browser": "webkit",
+          "determinismDigest": "a49a3682e48fd0fa5747d9195b91d2b8a730000e2d788c0ecc074e7b7ec61a2f"
+        }
+      ]
+    },
+    {
+      "label": "b10_repunit_10",
+      "match": true,
+      "details": [
+        {
+          "browser": "chromium",
+          "determinismDigest": "16d7a6aa98e4b50d0542d5daaf25fe168ff99fbf696eca624dcdbc9601ecd6fe"
+        },
+        {
+          "browser": "firefox",
+          "determinismDigest": "16d7a6aa98e4b50d0542d5daaf25fe168ff99fbf696eca624dcdbc9601ecd6fe"
+        },
+        {
+          "browser": "webkit",
+          "determinismDigest": "16d7a6aa98e4b50d0542d5daaf25fe168ff99fbf696eca624dcdbc9601ecd6fe"
+        }
+      ]
+    },
+    {
+      "label": "b10_repunit_9",
+      "match": true,
+      "details": [
+        {
+          "browser": "chromium",
+          "determinismDigest": "77d51be88d965877972bc2556da45a269719f00a035f0c8f4617a346d2906b85"
+        },
+        {
+          "browser": "firefox",
+          "determinismDigest": "77d51be88d965877972bc2556da45a269719f00a035f0c8f4617a346d2906b85"
+        },
+        {
+          "browser": "webkit",
+          "determinismDigest": "77d51be88d965877972bc2556da45a269719f00a035f0c8f4617a346d2906b85"
+        }
+      ]
+    },
+    {
+      "label": "b16_FF",
+      "match": true,
+      "details": [
+        {
+          "browser": "chromium",
+          "determinismDigest": "28d2a46c15705ba42c8fb6ba1a7743dd94231f4a9b25a1d35a0ab4d255de9dd5"
+        },
+        {
+          "browser": "firefox",
+          "determinismDigest": "28d2a46c15705ba42c8fb6ba1a7743dd94231f4a9b25a1d35a0ab4d255de9dd5"
+        },
+        {
+          "browser": "webkit",
+          "determinismDigest": "28d2a46c15705ba42c8fb6ba1a7743dd94231f4a9b25a1d35a0ab4d255de9dd5"
+        }
+      ]
+    },
+    {
+      "label": "b2_1011",
+      "match": true,
+      "details": [
+        {
+          "browser": "chromium",
+          "determinismDigest": "c67af05561e0e248ce04e937b7db9e118c8cc591ff4a1f4ac14311e3ea779f13"
+        },
+        {
+          "browser": "firefox",
+          "determinismDigest": "c67af05561e0e248ce04e937b7db9e118c8cc591ff4a1f4ac14311e3ea779f13"
+        },
+        {
+          "browser": "webkit",
+          "determinismDigest": "c67af05561e0e248ce04e937b7db9e118c8cc591ff4a1f4ac14311e3ea779f13"
+        }
+      ]
+    },
+    {
+      "label": "b36_ZZ",
+      "match": true,
+      "details": [
+        {
+          "browser": "chromium",
+          "determinismDigest": "4495d851377a0ce4f0ea23380a7d8540ff5ffffee760dd64b036a6b190e0af88"
+        },
+        {
+          "browser": "firefox",
+          "determinismDigest": "4495d851377a0ce4f0ea23380a7d8540ff5ffffee760dd64b036a6b190e0af88"
+        },
+        {
+          "browser": "webkit",
+          "determinismDigest": "4495d851377a0ce4f0ea23380a7d8540ff5ffffee760dd64b036a6b190e0af88"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,242 @@
+{
+  "config": {
+    "configFile": "/Users/velocityworks/IdeaProjects/research/palindromic-square/playwright.determinism.config.ts",
+    "rootDir": "/Users/velocityworks/IdeaProjects/research/palindromic-square/tests/e2e",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/velocityworks/IdeaProjects/research/palindromic-square/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/velocityworks/IdeaProjects/research/palindromic-square/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "determinism-evidence.spec.ts"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/velocityworks/IdeaProjects/research/palindromic-square/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "/Users/velocityworks/IdeaProjects/research/palindromic-square/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "determinism-evidence.spec.ts"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/velocityworks/IdeaProjects/research/palindromic-square/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "/Users/velocityworks/IdeaProjects/research/palindromic-square/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "determinism-evidence.spec.ts"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "html",
+        {
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "evidence/playwright-report.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "runAgents": "none",
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.58.2",
+    "workers": 1,
+    "webServer": {
+      "command": "npx pnpm@9 preview",
+      "url": "http://localhost:4173",
+      "reuseExistingServer": true,
+      "timeout": 30000
+    }
+  },
+  "suites": [
+    {
+      "title": "determinism-evidence.spec.ts",
+      "file": "determinism-evidence.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Cross-browser determinism evidence",
+          "file": "determinism-evidence.spec.ts",
+          "line": 110,
+          "column": 6,
+          "specs": [
+            {
+              "title": "compute determinism corpus and record digests",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4657,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[determinism] chromium: 9 corpus entries recorded\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-01T08:24:11.979Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "49a1ecbdaa26195147ab-a7bfa80749a181505aec",
+              "file": "determinism-evidence.spec.ts",
+              "line": 111,
+              "column": 3
+            },
+            {
+              "title": "compute determinism corpus and record digests",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6100,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[determinism] firefox: 9 corpus entries recorded\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-01T08:24:17.802Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "49a1ecbdaa26195147ab-98532c933d063116761d",
+              "file": "determinism-evidence.spec.ts",
+              "line": 111,
+              "column": 3
+            },
+            {
+              "title": "compute determinism corpus and record digests",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5374,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[determinism] webkit: 9 corpus entries recorded\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-01T08:24:25.643Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "49a1ecbdaa26195147ab-963e62a9499a21cb4a0f",
+              "file": "determinism-evidence.spec.ts",
+              "line": 111,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-03-01T08:24:06.652Z",
+    "duration": 24782.117,
+    "expected": 3,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

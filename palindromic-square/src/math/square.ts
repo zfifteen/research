@@ -18,7 +18,8 @@ export function isRepunit(digitsLE: DigitsLE): boolean {
 
 /**
  * O(1) fast path for repunit inputs per TECH_SPEC §8.3.
- * Returns an exact ComputeResult without invoking O(n²) convolution.
+ * Returns an exact ComputeResult with O(1) repunit classification.
+ * Note: for full digit materialization we still compute exact coefficients/carry.
  * Returns null if the input is not a repunit.
  */
 export function tryRepunitFastPath(digitsLE: DigitsLE, base: Base): ComputeResult | null {
@@ -28,14 +29,9 @@ export function tryRepunitFastPath(digitsLE: DigitsLE, base: Base): ComputeResul
   const verdict = repunitVerdict(base, digitsLE.length);
   const t1 = performance.now();
 
-  // For the fast path we still need the actual square digits.
-  // For small repunits we compute exactly; for large ones we compute
-  // the full convolution only if needed. But since the verdict gives us
-  // the palindrome answer in O(1), we can compute the square via
-  // the normal exact pipeline but mark timing as fast-path.
-  // However, the spec asks us to "bypass preview" and return an exact
-  // boolean verdict. We'll do the full exact computation to get digits,
-  // but the key contract is: isPalindrome is never 'indeterminate'.
+  // We use O(1) repunitVerdict() for exact classification.
+  // The exact square digits and raw coefficients are still materialized
+  // so downstream views/exports receive a full exact ComputeResult.
   const raw = selfConvolution(digitsLE);
   const peak = findPeak(raw);
   const carryResult = carryNormalize(raw, base, digitsLE.length <= 5000);
