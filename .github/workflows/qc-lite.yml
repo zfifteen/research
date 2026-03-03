@@ -1,0 +1,19 @@
+name: QC Lite
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: read
+
+jobs:
+  qc-lite:
+    name: qc-lite
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run QC lite checks for gaussian-hill-surface
+        run: gaussian-hill-surface/scripts/qc_check.sh
