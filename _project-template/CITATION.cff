@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+title: "Project Title"
+message: "If you use this work, please cite it using this metadata."
+type: software
+authors:
+  - family-names: "LastName"
+    given-names: "FirstName"
+repository-code: "https://github.com/<owner>/<repo>/tree/main/<project-folder>"
+version: "0.1.0"
+date-released: "2026-03-03"

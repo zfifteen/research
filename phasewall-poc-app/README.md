@@ -29,6 +29,10 @@ pip install -e .[dev]
 streamlit run app.py
 ```
 
+## User guide
+
+See `/Users/velocityworks/IdeaProjects/research/phasewall-poc-app/USER_GUIDE.md` for a full UI walkthrough with screenshots of every tab and key action state.
+
 ## CLI usage
 
 Run a quick local sanity demo:
