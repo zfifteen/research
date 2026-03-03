@@ -3,6 +3,10 @@
 ## Abstract
 This note evaluates whether a phase-aware update rule at the Gaussian curvature boundary (`r = sigma`) is associated with better optimization outcomes under noisy conditions in the bundled benchmark report artifacts. The release is exploratory and artifact-backed: it includes report-derived result tables, hash verification, and claim recomputation checks, but it does not include seed-level raw logs or a full from-scratch rerun pipeline.
 
+Published DOI references:
+- Version DOI: [10.5281/zenodo.18847306](https://doi.org/10.5281/zenodo.18847306)
+- Concept DOI: [10.5281/zenodo.18847305](https://doi.org/10.5281/zenodo.18847305)
+
 ## 1. Research Question and Scope
 ### 1.1 Research Question
 Can a phase-aware damping rule at the Gaussian curvature transition (`r = sigma`) improve robustness and sample efficiency relative to a vanilla baseline under the reported noisy benchmark conditions?

@@ -39,5 +39,5 @@ Command: bash scripts/qc_check.sh
 
 ## DOI
 Release Version: v0.1.0
-Version DOI: Pre-DOI draft; DOI will be minted at release publication.
-Concept DOI: Pre-DOI draft; DOI will be minted at release publication.
+Version DOI: 10.5281/zenodo.18847306
+Concept DOI: 10.5281/zenodo.18847305
