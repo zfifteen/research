@@ -1,0 +1,8 @@
+Output directory: /Users/velocityworks/IdeaProjects/research/ns-light-cone-trap/setup_2/results/20260303_150906
+Arguments: {'outdir': '/Users/velocityworks/IdeaProjects/research/ns-light-cone-trap/setup_2/results', 'seed': 1234, 'exp': 'all', 'dt': None, 'e1_N': 128, 'e1_nu_list': '1e-3,5e-4,2e-4', 'e1_noise_rel_list': '0.01,0.02,0.05', 'e1_tau_min': 0.5, 'e1_tau_max': 5.0, 'e1_tau_points': 20, 'e2_N': 128, 'e2_nu_list': '1e-3,5e-4,2e-4,1e-4', 'e2_k0': 8.0, 'e2_tau_min': 0.5, 'e2_tau_max': 3.5, 'e2_tau_points': 12, 'e2_obs_kfrac': 16, 'e2_noise_rel_list': '0.01,0.02,0.05', 'save_snapshots': True, 'save_npz': True}
+Runtime mode: fallback
+[exp1] nu=0.001, N=128, dt=0.005, t_obs=34.5600
+[exp1] nu=0.0005, N=128, dt=0.005, t_obs=34.5600
+[exp1] nu=0.0002, N=128, dt=0.005, t_obs=34.5600
+Saved: /Users/velocityworks/IdeaProjects/research/ns-light-cone-trap/setup_2/results/20260303_150906/metrics_exp1.csv
+[exp2] nu=0.001, N=128, dt=0.01, t_obs=30.5100

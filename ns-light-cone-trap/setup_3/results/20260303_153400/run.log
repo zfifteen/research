@@ -1,0 +1,11 @@
+Output directory: /Users/velocityworks/IdeaProjects/research/ns-light-cone-trap/setup_3/results/20260303_153400
+Arguments: {'outdir': 'results', 'seed': 42, 'N': 32, 're_list': '100,500,2000,5000', 'noise_rel': 0.02, 'horizon': 1.0, 't_total_test1': 3.0, 't_total_test2': 5.0, 'snapshots_test2': 100, 'max_steps': 5000, 'overwrite_canonical': False}
+[test1] Re=100, fwd=0.0133768, bwd=0.338482, ratio=25.3
+[test1] Re=500, fwd=0.0212339, bwd=0.0347893, ratio=1.638
+[test1] Re=2000, fwd=0.0246467, bwd=0.0271713, ratio=1.102
+[test1] Re=5000, fwd=0.0287032, bwd=0.0268656, ratio=0.936
+[test2] Re=2000, info(0)=9.6511, info(T)=9.5430, loss_avg=0.0214, critical=1.4477
+Saved: /Users/velocityworks/IdeaProjects/research/ns-light-cone-trap/setup_3/results/20260303_153400/reconstruction_test_results.csv
+Saved: /Users/velocityworks/IdeaProjects/research/ns-light-cone-trap/setup_3/results/20260303_153400/test2_information_series.csv
+Saved: /Users/velocityworks/IdeaProjects/research/ns-light-cone-trap/setup_3/results/20260303_153400/navier_stokes_reconstruction_asymmetry.png
+Saved: /Users/velocityworks/IdeaProjects/research/ns-light-cone-trap/setup_3/results/20260303_153400/summary.json

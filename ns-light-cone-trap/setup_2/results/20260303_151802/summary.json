@@ -1,0 +1,44 @@
+{
+  "exp1_summary": {
+    "nu=0.001|noise=0.01": {
+      "max_growth_ratio": 2193149296667461.5,
+      "max_z_tau": 2.848373620278984,
+      "min_skill": 0.0379746835443038,
+      "verdict": "Inconclusive"
+    }
+  },
+  "exp2_summary": {
+    "nu=0.001|noise=0.01": {
+      "diverged_rows": 0,
+      "max_growth_ratio": 1132307045568.8342,
+      "max_z_tau": 1.0814269942370796,
+      "min_skill": 0.06962025316455696,
+      "verdict": "Inconclusive"
+    }
+  },
+  "global_outcome": "Inconclusive",
+  "run_config": {
+    "dt": null,
+    "e1_N": 32,
+    "e1_noise_rel_list": "0.01",
+    "e1_nu_list": "1e-3",
+    "e1_tau_max": 5.0,
+    "e1_tau_min": 0.5,
+    "e1_tau_points": 4,
+    "e2_N": 32,
+    "e2_k0": 8.0,
+    "e2_noise_rel_list": "0.01",
+    "e2_nu_list": "1e-3",
+    "e2_obs_kfrac": 16,
+    "e2_tau_max": 3.5,
+    "e2_tau_min": 0.5,
+    "e2_tau_points": 3,
+    "exp": "all",
+    "outdir": "/Users/velocityworks/IdeaProjects/research/ns-light-cone-trap/setup_2/results",
+    "save_npz": true,
+    "save_snapshots": true,
+    "seed": 1234
+  },
+  "runtime_mode": "fallback",
+  "runtime_seconds": 5.9747068881988525
+}
