@@ -157,12 +157,10 @@ This thesis should be rejected if repeated experiments show:
 If those outcomes occur, the rule is not broadly useful and should remain a niche geometric observation.
 
 ## Repository Guide
-- `docs/specs/PhaseWall_Tech_Spec_v2.1.md`: implementation-level mechanism and acceptance criteria
-- `docs/notes/PhaseWall_Developer_Note_v2.1.md`: reviewer-facing integration notes
-- `docs/notes/PhaseWall_Sandbox_Playbook_v2.1.md`: execution flow for constrained environments
+- `docs/technical-note/technical_note.md`: canonical DOI-facing technical note
 - `docs/analysis/benchmarks.md` and `artifacts/reports/PhaseWall_Benchmark_Report.pdf`: quantitative results
-- `docs/analysis/practical_application.md`: deployment-oriented integration sketches
-- `docs/reviews/peer_review_*.md`: critique history and design hardening
+
+Product-oriented implementation docs, plans, and product-focused peer reviews are maintained in the separate `phasewall` repository.
 
 ## References
 [1] Closed-form Gaussian hill curvature sign structure and the `r = σ` transition (see local technical spec and benchmark notes).

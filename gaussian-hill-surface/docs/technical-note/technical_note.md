@@ -44,8 +44,8 @@ def apply_phase_wall_z(z, r0, strength=0.4):
     return z
 ```
 
-Implementation details and design constraints are documented in:
-- `gaussian-hill-surface/docs/specs/PhaseWall_Tech_Spec_v2.1.md`
+Detailed implementation notes for downstream productization are maintained in the PhaseWall product repository:
+- `phasewall/docs/spec/phasewall-tech-spec-v2.1.md`
 
 ## 3. Experimental Setup (Reported Artifacts)
 This note summarizes existing repository artifacts and does not claim fresh reruns in this revision.
@@ -102,7 +102,7 @@ Artifact manifest is maintained in:
 In these reported runs, the PhaseWall formulation is associated with lower final objective values than the vanilla baseline on the documented benchmark set. The current evidence supports an exploratory claim that geometry-aware damping may improve robustness under the tested conditions. The next validation step is to add a full rerun pipeline with raw-result regeneration to strengthen reproducibility beyond artifact-level verification.
 
 ## References
-1. `gaussian-hill-surface/docs/specs/PhaseWall_Tech_Spec_v2.1.md`
-2. `gaussian-hill-surface/docs/analysis/benchmarks.md`
-3. `gaussian-hill-surface/artifacts/reports/PhaseWall_Benchmark_Report.pdf`
-4. `gaussian-hill-surface/README.md`
+1. `gaussian-hill-surface/docs/analysis/benchmarks.md`
+2. `gaussian-hill-surface/artifacts/reports/PhaseWall_Benchmark_Report.pdf`
+3. `gaussian-hill-surface/README.md`
+4. `phasewall/docs/spec/phasewall-tech-spec-v2.1.md` (downstream implementation reference)
