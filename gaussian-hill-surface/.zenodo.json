@@ -17,7 +17,7 @@
   ],
   "related_identifiers": [
     {
-      "identifier": "https://github.com/zfifteen/research/tree/main/gaussian-hill-surface",
+      "identifier": "https://github.com/zfifteen/research/tree/v0.1.0/gaussian-hill-surface",
       "relation": "isSupplementTo",
       "resource_type": "software"
     }
