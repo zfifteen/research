@@ -1,0 +1,2 @@
+mesh_name,theta_target,theta_label,z_range_mean,z_min,z_max,z_mean,pure_lsq_error,pure_gg_error,glsq_05_error,hybrid_advantage,gg_time_ms,wlsq_time_ms,glsq_05_time_ms,regime_high_pct,regime_trans_pct,regime_low_pct
+skew_50deg,50.0,50°,1.98-340.00 (13.97),1.9794046,340.0,13.968182629839772,0.2671826552459253,3.7797298369105103,1.8980230198100032,1.9914035801783219,0.8017090003704652,1.046249999490101,2.379333000135375,52.54668930390493,40.492359932088284,6.960950764006792

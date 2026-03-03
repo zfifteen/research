@@ -1,0 +1,5 @@
+Target θ_skew: 70°
+Actual max θ_skew: 90.00°
+High-z (>6):     0.0%
+Transition:      1.7%
+Low-z (<3):     98.2%

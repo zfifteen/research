@@ -1,0 +1,2 @@
+MIXED PRODUCTION MESH (typical engineering distribution)
+High-z: 0.1% | Transition: 2.1% | Low-z: 97.8%
