@@ -6,6 +6,7 @@
 - The reported benchmark and figure artifacts in this project are sufficient to audit these claims.
 
 ## Evidence Map
+- Claim 1 -> `gaussian-hill-surface/docs/technical-note/technical_note.md`
 - Claim 1 -> `gaussian-hill-surface/docs/specs/PhaseWall_Tech_Spec_v2.1.md`
 - Claim 2 -> `gaussian-hill-surface/docs/analysis/benchmarks.md`
 - Claim 2 -> `gaussian-hill-surface/artifacts/reports/PhaseWall_Benchmark_Report.pdf`
@@ -32,6 +33,7 @@ Command: python3 -c "import pathlib; req=[pathlib.Path('gaussian-hill-surface/ar
 - path: gaussian-hill-surface/artifacts/figures/benchmarks/benchmark_ratios.png
 - path: gaussian-hill-surface/docs/analysis/benchmarks.md
 - path: gaussian-hill-surface/docs/specs/PhaseWall_Tech_Spec_v2.1.md
+- path: gaussian-hill-surface/docs/technical-note/technical_note.md
 
 ## DOI
 Release Version: v0.1.0

@@ -14,6 +14,11 @@ We would not have predicted that systems governed by these curves possess a buil
 
 If you deploy a pathfinding algorithm to climb a perfectly normal gradient, you should expect to measure an abrupt, severe spike in directional scattering the exact moment the path crosses this hidden perimeter.
 ---
+## Publication Note
+The canonical DOI-facing narrative for this project is:
+
+- `docs/technical-note/technical_note.md`
+
 ## The Thesis
 The 1σ boundary is not merely descriptive statistics. It is an algorithmic control surface.
 
