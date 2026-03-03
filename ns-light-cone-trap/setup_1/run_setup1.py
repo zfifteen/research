@@ -380,23 +380,32 @@ def main() -> None:
                     baseline_hat *= (np.abs(cfg.k) <= 8)
                     baseline = np.fft.ifft(baseline_hat).real
 
+                    # Perturbation bandwidth must cover all observed modes so
+                    # candidates have spectral content matching observations.
+                    pert_max_mode = max(k_obs, min(32, args.N // 8))
                     pert0 = make_bandlimited_perturbations(
-                        cfg_rng, cfg.k, (args.K, args.N), max_mode=min(32, args.N // 8), scale=0.05 * u_rms
+                        cfg_rng, cfg.k, (args.K, args.N), max_mode=pert_max_mode, scale=0.30 * u_rms
                     )
                     candidates = baseline[None, :] + pert0
                     _, misfit = evaluate_candidates(candidates, duration, cfg, y_obs, obs_mask)
 
                     eps_eff = max(eps, 1e-12)
-                    threshold = 2.5 * eps_eff * math.sqrt(n_obs)
+                    # Adaptive threshold: noise-based floor + fraction of observation norm
+                    # to account for forward-model error from imperfect candidates.
+                    obs_norm = float(np.linalg.norm(y_obs))
+                    threshold = max(3.0 * eps_eff * math.sqrt(n_obs), 0.15 * obs_norm)
                     accepted = misfit <= threshold
 
-                    if int(np.count_nonzero(accepted)) < 8:
+                    # Multiple refinement rounds to improve acceptance rate.
+                    for _refine_round in range(3):
+                        if int(np.count_nonzero(accepted)) >= 8:
+                            break
                         keep = max(1, args.K // 4)
                         elite_idx = np.argsort(misfit)[:keep]
                         elite = candidates[elite_idx]
                         pick = cfg_rng.integers(0, keep, size=args.K)
                         pert1 = make_bandlimited_perturbations(
-                            cfg_rng, cfg.k, (args.K, args.N), max_mode=min(32, args.N // 8), scale=0.03 * u_rms
+                            cfg_rng, cfg.k, (args.K, args.N), max_mode=pert_max_mode, scale=0.15 * u_rms
                         )
                         refined = elite[pick] + pert1
                         candidates = refined
