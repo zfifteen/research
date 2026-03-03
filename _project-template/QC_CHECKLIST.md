@@ -6,6 +6,7 @@
 - [ ] Claims avoid hype and overreach
 
 ## Evidence Map
+- Claim 1 -> docs/technical-note/technical_note.md
 - Claim 1 -> docs/specs/method.md
 - Claim 1 -> artifacts/figures/figure_1.png
 - Claim 2 -> docs/analysis/results.md
@@ -27,6 +28,7 @@ Command: echo "replace with real reproducibility command"
 - path: artifacts/README.md
 - path: docs/analysis/README.md
 - path: docs/specs/README.md
+- path: docs/technical-note/technical_note.md
 
 ## DOI
 Release Version: v0.1.0

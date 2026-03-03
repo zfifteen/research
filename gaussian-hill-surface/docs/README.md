@@ -2,13 +2,14 @@
 
 This folder contains all narrative and technical documentation for the Gaussian Hill Surface project.
 
-- `plans/`: project and implementation plans.
-- `specs/`: formal technical specifications.
-- `notes/`: developer and execution notes.
-- `reviews/`: peer-review feedback and re-reviews.
+- `technical-note/`: DOI-facing technical note for this research package.
 - `analysis/`: applied writeups and benchmark summaries.
+- `release-notes/`: release-note snapshots aligned to publication scope and QC status.
 
 Primary reading path:
 1. `../README.md`
-2. `specs/PhaseWall_Tech_Spec_v2.1.md`
+2. `technical-note/technical_note.md`
 3. `analysis/benchmarks.md`
+4. `release-notes/v0.1.0-conservative-doi-draft.md`
+
+Product-oriented implementation docs and peer/product review materials are maintained in the separate `phasewall` repository.
