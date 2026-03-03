@@ -1,0 +1,66 @@
+{
+  "numeric_warning_count": 0,
+  "overall_interpretation": "Inconclusive",
+  "reproduction_vs_existing": {
+    "matched_re_values": [
+      100,
+      500,
+      2000,
+      5000
+    ],
+    "max_abs_delta_ratio": 2.220446049250313e-16
+  },
+  "run_config": {
+    "N": 32,
+    "horizon": 1.0,
+    "max_steps": 5000,
+    "noise_rel": 0.02,
+    "outdir": "results",
+    "overwrite_canonical": false,
+    "re_list": "100,500,2000,5000",
+    "seed": 42,
+    "snapshots_test2": 100,
+    "t_total_test1": 3.0,
+    "t_total_test2": 5.0
+  },
+  "runtime_seconds": 0.8668229579925537,
+  "test1": {
+    "ratio_at_re5000": 0.9359786721069987,
+    "ratio_monotonic_with_re": false,
+    "rows": [
+      {
+        "Re": 100,
+        "backward_error": 0.33848226638880147,
+        "forward_error": 0.01337681039317206,
+        "ratio": 25.303660322611236
+      },
+      {
+        "Re": 500,
+        "backward_error": 0.034789332435046096,
+        "forward_error": 0.02123388215766681,
+        "ratio": 1.6383877510822904
+      },
+      {
+        "Re": 2000,
+        "backward_error": 0.0271712600605076,
+        "forward_error": 0.024646723910080243,
+        "ratio": 1.1024288728854081
+      },
+      {
+        "Re": 5000,
+        "backward_error": 0.026865551941382727,
+        "forward_error": 0.0287031667942873,
+        "ratio": 0.9359786721069987
+      }
+    ]
+  },
+  "test2": {
+    "avg_loss_rate": 0.02138793444289078,
+    "critical_threshold": 1.4476577536768391,
+    "eddy_turnover_time": 7.978024366903776,
+    "final_info_bits": 9.543031820255237,
+    "initial_info_bits": 9.651051691178928,
+    "max_loss_rate": 0.11410990847215885,
+    "threshold_crossed": false
+  }
+}

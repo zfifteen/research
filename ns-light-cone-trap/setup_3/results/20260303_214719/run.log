@@ -1,0 +1,11 @@
+Output directory: /home/runner/work/research/research/ns-light-cone-trap/setup_3/results/20260303_214719
+Arguments: {'outdir': 'results', 'seed': 42, 'N': 32, 're_list': '100,500,2000,5000', 'noise_rel': 0.02, 'horizon': 2.0, 't_total_test1': 6.0, 't_total_test2': 5.0, 'snapshots_test2': 100, 'max_steps': 10000, 'overwrite_canonical': False}
+[test1] Re=100, fwd=0.016164, bwd=28.689, ratio=1775
+[test1] Re=500, fwd=0.0254022, bwd=0.0613008, ratio=2.413
+[test1] Re=2000, fwd=0.0337887, bwd=0.0393844, ratio=1.166
+[test1] Re=5000, fwd=0.0401632, bwd=0.0360886, ratio=0.8986
+[test2] Re=2000, info(0)=9.6511, info(T)=9.5430, loss_avg=0.0214, critical=1.4477
+Saved: /home/runner/work/research/research/ns-light-cone-trap/setup_3/results/20260303_214719/reconstruction_test_results.csv
+Saved: /home/runner/work/research/research/ns-light-cone-trap/setup_3/results/20260303_214719/test2_information_series.csv
+Saved: /home/runner/work/research/research/ns-light-cone-trap/setup_3/results/20260303_214719/navier_stokes_reconstruction_asymmetry.png
+Saved: /home/runner/work/research/research/ns-light-cone-trap/setup_3/results/20260303_214719/summary.json

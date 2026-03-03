@@ -1,0 +1,45 @@
+{
+  "numeric_warning_count": 0,
+  "overall_interpretation": "Partial",
+  "reproduction_vs_existing": {
+    "matched_re_values": [
+      100
+    ],
+    "max_abs_delta_ratio": 197.39111361949156
+  },
+  "run_config": {
+    "N": 32,
+    "horizon": 1.0,
+    "max_steps": 5000,
+    "noise_rel": 0.02,
+    "outdir": "results",
+    "overwrite_canonical": true,
+    "re_list": "100",
+    "seed": 42,
+    "snapshots_test2": 20,
+    "t_total_test1": 3.0,
+    "t_total_test2": 5.0
+  },
+  "runtime_seconds": 0.5958118438720703,
+  "test1": {
+    "ratio_at_re5000": null,
+    "ratio_monotonic_with_re": true,
+    "rows": [
+      {
+        "Re": 100,
+        "backward_error": 0.33934550831469434,
+        "forward_error": 0.009951824279526808,
+        "ratio": 34.098824374623064
+      }
+    ]
+  },
+  "test2": {
+    "avg_loss_rate": 0.02089072624057996,
+    "critical_threshold": 1.4476577536768391,
+    "eddy_turnover_time": 7.978024366903776,
+    "final_info_bits": 9.543031820255237,
+    "initial_info_bits": 9.651051691178928,
+    "max_loss_rate": 0.05816919775236329,
+    "threshold_crossed": false
+  }
+}

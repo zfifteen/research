@@ -1,0 +1,62 @@
+{
+  "exp1_summary": {
+    "nu=0.0005|noise=0.01": {
+      "max_growth_ratio": 7.013107666503013e+21,
+      "max_z_tau": 3.124934361844499,
+      "min_skill": 0.07580174927113703,
+      "verdict": "Supported"
+    },
+    "nu=0.0005|noise=0.02": {
+      "max_growth_ratio": 1.5334124360237184e+22,
+      "max_z_tau": 3.16436571025894,
+      "min_skill": 0.0641399416909621,
+      "verdict": "Supported"
+    },
+    "nu=0.001|noise=0.01": {
+      "max_growth_ratio": 6.236318030757031e+35,
+      "max_z_tau": 3.8065176837474173,
+      "min_skill": 0.0,
+      "verdict": "Supported"
+    },
+    "nu=0.001|noise=0.02": {
+      "max_growth_ratio": 1.7189332532873343e+36,
+      "max_z_tau": 3.8065176837474173,
+      "min_skill": 0.0,
+      "verdict": "Supported"
+    }
+  },
+  "exp2_summary": {
+    "nu=0.001|noise=0.01": {
+      "diverged_rows": 1,
+      "max_growth_ratio": 32617701953654.26,
+      "max_z_tau": 1.6009135053399703,
+      "min_skill": 0.0058309037900874635,
+      "verdict": "Inconclusive"
+    }
+  },
+  "global_outcome": "Supported",
+  "run_config": {
+    "dt": null,
+    "e1_N": 64,
+    "e1_noise_rel_list": "0.01,0.02",
+    "e1_nu_list": "1e-3,5e-4",
+    "e1_tau_max": 5.0,
+    "e1_tau_min": 0.5,
+    "e1_tau_points": 8,
+    "e2_N": 64,
+    "e2_k0": 8.0,
+    "e2_noise_rel_list": "0.01",
+    "e2_nu_list": "1e-3",
+    "e2_obs_kfrac": 16,
+    "e2_tau_max": 3.5,
+    "e2_tau_min": 0.5,
+    "e2_tau_points": 6,
+    "exp": "all",
+    "outdir": "/Users/velocityworks/IdeaProjects/research/ns-light-cone-trap/setup_2/results",
+    "save_npz": true,
+    "save_snapshots": true,
+    "seed": 1234
+  },
+  "runtime_mode": "fallback",
+  "runtime_seconds": 24.044904947280884
+}

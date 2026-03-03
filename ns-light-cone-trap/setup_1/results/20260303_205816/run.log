@@ -1,0 +1,22 @@
+Output directory: /home/runner/work/research/research/ns-light-cone-trap/setup_1/results/20260303_205816
+Seed: 1234, N: 128, K: 64
+nu_list=[0.01, 0.005, 0.002], kobs_frac_list=[16], eps_rel_list=[0.001, 0.01]
+Computed U_rms=1.000000, T_eddy=6.283185
+[nu=0.01] dt=0.01, steps=2200, t_final=22.0000 (3.501 turnovers)
+  Config nu=0.01, k_obs=N/16, eps_rel=0.001, n_obs=17, eps=1.000e-03
+    Verdict: Inconclusive; tau*=None; slope_ratio=1.8882327256105424e+17
+  Config nu=0.01, k_obs=N/16, eps_rel=0.01, n_obs=17, eps=1.000e-02
+    Verdict: Inconclusive; tau*=None; slope_ratio=None
+[nu=0.005] dt=0.01, steps=2200, t_final=22.0000 (3.501 turnovers)
+  Config nu=0.005, k_obs=N/16, eps_rel=0.001, n_obs=17, eps=1.000e-03
+    Verdict: Inconclusive; tau*=None; slope_ratio=-4.404308842989793e+16
+  Config nu=0.005, k_obs=N/16, eps_rel=0.01, n_obs=17, eps=1.000e-02
+    Verdict: Inconclusive; tau*=None; slope_ratio=-3.4493557437981376e+16
+[nu=0.002] dt=0.01, steps=2200, t_final=22.0000 (3.501 turnovers)
+  Config nu=0.002, k_obs=N/16, eps_rel=0.001, n_obs=17, eps=1.000e-03
+    Verdict: Supported; tau*=1.8207325489712827; slope_ratio=-2459367604906885.5
+  Config nu=0.002, k_obs=N/16, eps_rel=0.01, n_obs=17, eps=1.000e-02
+    Verdict: Supported; tau*=1.8207325489712827; slope_ratio=-1408491668330206.5
+Saved metrics to: /home/runner/work/research/research/ns-light-cone-trap/setup_1/results/20260303_205816/metrics.csv
+Saved summary to: /home/runner/work/research/research/ns-light-cone-trap/setup_1/results/20260303_205816/summary.json
+Saved plots to: /home/runner/work/research/research/ns-light-cone-trap/setup_1/results/20260303_205816

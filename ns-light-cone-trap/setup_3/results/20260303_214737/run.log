@@ -1,0 +1,2 @@
+Output directory: /home/runner/work/research/research/ns-light-cone-trap/setup_3/results/20260303_214737
+Arguments: {'outdir': 'results', 'seed': 42, 'N': 64, 're_list': '100,500,2000', 'noise_rel': 0.02, 'horizon': 2.0, 't_total_test1': 6.0, 't_total_test2': 5.0, 'snapshots_test2': 80, 'max_steps': 10000, 'overwrite_canonical': False}

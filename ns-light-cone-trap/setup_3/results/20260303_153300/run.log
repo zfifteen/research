@@ -1,0 +1,2 @@
+Output directory: /Users/velocityworks/IdeaProjects/research/ns-light-cone-trap/setup_3/results/20260303_153300
+Arguments: {'outdir': 'results', 'seed': 42, 'N': 64, 're_list': '100,500,2000,5000', 'noise_rel': 0.02, 'horizon': 1.0, 't_total_test1': 3.0, 't_total_test2': 5.0, 'snapshots_test2': 100, 'max_steps': 800, 'overwrite_canonical': True}

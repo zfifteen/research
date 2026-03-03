@@ -1,0 +1,97 @@
+{
+  "K": 64,
+  "N": 128,
+  "configs": {
+    "nu=0.002|kobs=N/16|eps=0.001": {
+      "eps_rel": 0.001,
+      "kobs_frac": 16,
+      "max_spread": 0.3024883483286792,
+      "nu": 0.002,
+      "slope_bwd": -0.8707164421182878,
+      "slope_fwd": 3.5404078690027884e-16,
+      "slope_ratio_bwd_over_fwd": -2459367604906885.5,
+      "tau_star": 1.8207325489712827,
+      "verdict": "Supported"
+    },
+    "nu=0.002|kobs=N/16|eps=0.01": {
+      "eps_rel": 0.01,
+      "kobs_frac": 16,
+      "max_spread": 0.3038478847673007,
+      "nu": 0.002,
+      "slope_bwd": -0.4986634985981129,
+      "slope_fwd": 3.5404078690027884e-16,
+      "slope_ratio_bwd_over_fwd": -1408491668330206.5,
+      "tau_star": 1.8207325489712827,
+      "verdict": "Supported"
+    },
+    "nu=0.005|kobs=N/16|eps=0.001": {
+      "eps_rel": 0.001,
+      "kobs_frac": 16,
+      "max_spread": 0.3051102690758609,
+      "nu": 0.005,
+      "slope_bwd": -2.063588880498093,
+      "slope_fwd": 4.685386411497109e-17,
+      "slope_ratio_bwd_over_fwd": -4.404308842989793e+16,
+      "tau_star": null,
+      "verdict": "Inconclusive"
+    },
+    "nu=0.005|kobs=N/16|eps=0.01": {
+      "eps_rel": 0.01,
+      "kobs_frac": 16,
+      "max_spread": 0.30593981127130726,
+      "nu": 0.005,
+      "slope_bwd": -1.6161564530411296,
+      "slope_fwd": 4.685386411497109e-17,
+      "slope_ratio_bwd_over_fwd": -3.4493557437981376e+16,
+      "tau_star": null,
+      "verdict": "Inconclusive"
+    },
+    "nu=0.01|kobs=N/16|eps=0.001": {
+      "eps_rel": 0.001,
+      "kobs_frac": 16,
+      "max_spread": 0.29874790997765965,
+      "nu": 0.01,
+      "slope_bwd": -0.7848446345107568,
+      "slope_fwd": -4.156503718348513e-18,
+      "slope_ratio_bwd_over_fwd": 1.8882327256105424e+17,
+      "tau_star": null,
+      "verdict": "Inconclusive"
+    },
+    "nu=0.01|kobs=N/16|eps=0.01": {
+      "eps_rel": 0.01,
+      "kobs_frac": 16,
+      "max_spread": 0.26497457182616724,
+      "nu": 0.01,
+      "slope_bwd": null,
+      "slope_fwd": -4.156503718348513e-18,
+      "slope_ratio_bwd_over_fwd": null,
+      "tau_star": null,
+      "verdict": "Inconclusive"
+    }
+  },
+  "eps_rel_list": [
+    0.001,
+    0.01
+  ],
+  "kobs_frac_list": [
+    16
+  ],
+  "nu_list": [
+    0.01,
+    0.005,
+    0.002
+  ],
+  "seed": 1234,
+  "t_eddy": 6.283185307179586,
+  "tau_grid_requested": [
+    0.25,
+    0.6428571428571428,
+    1.0357142857142856,
+    1.4285714285714286,
+    1.8214285714285714,
+    2.2142857142857144,
+    2.607142857142857,
+    3.0
+  ],
+  "u_rms": 1.0
+}

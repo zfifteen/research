@@ -1,0 +1,10 @@
+Output directory: /Users/velocityworks/IdeaProjects/research/ns-light-cone-trap/setup_1/results/20260303_144017
+Seed: 222, N: 256, K: 8
+nu_list=[0.01], kobs_frac_list=[16], eps_rel_list=[0.0]
+Computed U_rms=1.000000, T_eddy=6.283185
+[nu=0.01] dt=0.0139817, steps=1573, t_final=21.9933 (3.500 turnovers)
+  Config nu=0.01, k_obs=N/16, eps_rel=0, n_obs=33, eps=0.000e+00
+    Verdict: Inconclusive; tau*=None; slope_ratio=None
+Saved metrics to: /Users/velocityworks/IdeaProjects/research/ns-light-cone-trap/setup_1/results/20260303_144017/metrics.csv
+Saved summary to: /Users/velocityworks/IdeaProjects/research/ns-light-cone-trap/setup_1/results/20260303_144017/summary.json
+Saved plots to: /Users/velocityworks/IdeaProjects/research/ns-light-cone-trap/setup_1/results/20260303_144017

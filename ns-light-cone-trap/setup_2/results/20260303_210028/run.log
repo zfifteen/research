@@ -1,0 +1,10 @@
+Output directory: /home/runner/work/research/research/ns-light-cone-trap/setup_2/results/20260303_210028
+Arguments: {'outdir': 'results', 'seed': 1234, 'exp': 'all', 'dt': None, 'e1_N': 64, 'e1_nu_list': '1e-3,5e-4', 'e1_noise_rel_list': '0.01,0.02', 'e1_tau_min': 0.5, 'e1_tau_max': 5.0, 'e1_tau_points': 8, 'e2_N': 64, 'e2_nu_list': '1e-3,5e-4', 'e2_k0': 8.0, 'e2_tau_min': 0.5, 'e2_tau_max': 3.0, 'e2_tau_points': 8, 'e2_obs_kfrac': 16, 'e2_noise_rel_list': '0.01', 'save_snapshots': False, 'save_npz': False}
+Runtime mode: fallback
+[exp1] nu=0.001, N=64, dt=0.005, t_obs=34.5600
+[exp1] nu=0.0005, N=64, dt=0.005, t_obs=34.5600
+Saved: /home/runner/work/research/research/ns-light-cone-trap/setup_2/results/20260303_210028/metrics_exp1.csv
+[exp2] nu=0.001, N=64, dt=0.01, t_obs=26.2700
+[exp2] nu=0.0005, N=64, dt=0.01, t_obs=26.2700
+Saved: /home/runner/work/research/research/ns-light-cone-trap/setup_2/results/20260303_210028/metrics_exp2.csv
+Saved: /home/runner/work/research/research/ns-light-cone-trap/setup_2/results/20260303_210028/summary.json

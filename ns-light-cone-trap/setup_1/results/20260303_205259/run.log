@@ -1,0 +1,6 @@
+Output directory: /home/runner/work/research/research/ns-light-cone-trap/setup_1/results/20260303_205259
+Seed: 1234, N: 256, K: 128
+nu_list=[0.01, 0.005, 0.002], kobs_frac_list=[16], eps_rel_list=[0.001, 0.01]
+Computed U_rms=1.000000, T_eddy=6.283185
+[nu=0.01] dt=0.005, steps=4399, t_final=21.9950 (3.501 turnovers)
+  Config nu=0.01, k_obs=N/16, eps_rel=0.001, n_obs=33, eps=1.000e-03

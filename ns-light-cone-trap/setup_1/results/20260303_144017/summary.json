@@ -1,0 +1,35 @@
+{
+  "K": 8,
+  "N": 256,
+  "configs": {
+    "nu=0.01|kobs=N/16|eps=0": {
+      "eps_rel": 0.0,
+      "kobs_frac": 16,
+      "max_spread": null,
+      "nu": 0.01,
+      "slope_bwd": null,
+      "slope_fwd": 2.501675270397223e-16,
+      "slope_ratio_bwd_over_fwd": null,
+      "tau_star": null,
+      "verdict": "Inconclusive"
+    }
+  },
+  "eps_rel_list": [
+    0.0
+  ],
+  "kobs_frac_list": [
+    16
+  ],
+  "nu_list": [
+    0.01
+  ],
+  "seed": 222,
+  "t_eddy": 6.283185307179587,
+  "tau_grid_requested": [
+    0.25,
+    1.1666666666666665,
+    2.083333333333333,
+    3.0
+  ],
+  "u_rms": 0.9999999999999999
+}
