@@ -1,0 +1,10 @@
+{
+  "date": "2026-03-03T07:22:25.259662",
+  "plastic_constant": 1.3247179572447458,
+  "n_trials": 200,
+  "noise_std": 0.05,
+  "application_results": {
+    "rmsg_max_deviation": 0.031020455287552595,
+    "pnsf_delta_snr_fullband_dB": -2.091277428160467
+  }
+}
