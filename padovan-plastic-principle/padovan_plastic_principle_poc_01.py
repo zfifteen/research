@@ -22,8 +22,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from datetime import datetime
-import os
 import textwrap
+from pathlib import Path
 
 # ========================== CONFIGURATION ==========================
 plt.style.use('seaborn-v0_8-whitegrid')
@@ -32,8 +32,9 @@ np.random.seed(42)
 N_STEPS = 100
 NOISE_STD = 0.05
 NUM_TRIALS = 50
-SAVE_DIR = "plastic_whitepaper_assets"
-os.makedirs(SAVE_DIR, exist_ok=True)
+SCRIPT_DIR = Path(__file__).resolve().parent
+SAVE_DIR = SCRIPT_DIR / "plastic_whitepaper_assets"
+SAVE_DIR.mkdir(parents=True, exist_ok=True)
 
 # Plastic constant ρ (real root of x^3 - x - 1 = 0)
 _roots = np.roots([1, 0, -1, -1])
@@ -126,7 +127,7 @@ def generate_main_plots():
     axs[1].grid(True, alpha=0.3)
 
     plt.tight_layout()
-    plt.savefig(f'{SAVE_DIR}/figure_1_error_analysis.png', dpi=300, bbox_inches='tight')
+    plt.savefig(SAVE_DIR / "figure_1_error_analysis.png", dpi=300, bbox_inches='tight')
     plt.close()
     print("   ✓ Figure 1 saved (exact reproduction of your uploaded image)")
 
@@ -143,11 +144,11 @@ def generate_main_plots():
     ax.set_yscale('log')
     ax.legend()
     ax.grid(True, alpha=0.3)
-    plt.savefig(f'{SAVE_DIR}/figure_2_eigenmodes.png', dpi=300, bbox_inches='tight')
+    plt.savefig(SAVE_DIR / "figure_2_eigenmodes.png", dpi=300, bbox_inches='tight')
     plt.close()
     print("   ✓ Figure 2 saved (eigenvalue damping)")
 
-    print(f"All plots saved to ./{SAVE_DIR}/")
+    print(f"All plots saved to {SAVE_DIR}/")
 
 # ======================= WHITE PAPER CONTENT =======================
 def print_whitepaper():
@@ -268,9 +269,9 @@ The gap is the feature. Split-path propagation + phased cancellation = built-in 
 
 **This white paper is itself executable proof.**
 """
-    with open('plastic_number_whitepaper.md', 'w', encoding='utf-8') as f:
+    with open(SCRIPT_DIR / "plastic_number_whitepaper.md", 'w', encoding='utf-8') as f:
         f.write(md_content)
-    print("   ✓ whitepaper.md written (ready for pandoc → PDF)")
+    print("   ✓ plastic_number_whitepaper.md written (ready for pandoc → PDF)")
 
 # ======================= MAIN EXECUTION =======================
 if __name__ == "__main__":

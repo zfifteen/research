@@ -19,13 +19,10 @@ Author: Fate + Claude (strengthened March 2026)
 
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
-import seaborn as sns
 from scipy import stats
 from datetime import datetime
-import os
-import textwrap
 import json
+from pathlib import Path
 
 # ─────────────────────────── CONFIG ───────────────────────────
 plt.style.use('seaborn-v0_8-whitegrid')
@@ -34,8 +31,9 @@ np.random.seed(42)
 N_STEPS   = 100
 NOISE_STD = 0.05
 N_TRIALS  = 200          # more trials → tighter CIs
-SAVE_DIR  = "plastic_whitepaper_assets_v2"
-os.makedirs(SAVE_DIR, exist_ok=True)
+SCRIPT_DIR = Path(__file__).resolve().parent
+SAVE_DIR  = SCRIPT_DIR / "plastic_whitepaper_assets_v2"
+SAVE_DIR.mkdir(parents=True, exist_ok=True)
 
 # Plastic constant ρ (real root of x³ − x − 1 = 0)
 _roots = np.roots([1, 0, -1, -1])
@@ -58,9 +56,11 @@ class NoiseModel:
         return float(rho * prev + np.random.normal(0, scale * np.sqrt(1 - rho**2)))
 
     @staticmethod
-    def systematic(scale, bias=0.02):
-        """Systematic bias — tool that consistently cuts short."""
-        return float(np.random.normal(bias * scale, scale * 0.5))
+    def systematic(ideal_value, noise_std, bias=0.02):
+        """Systematic bias relative to ideal step size, plus residual stochastic spread."""
+        mean = bias * ideal_value
+        sigma = 0.5 * noise_std * abs(ideal_value)
+        return float(np.random.normal(mean, sigma))
 
 
 def simulate_recurrence(recurrence_offsets, n_steps=N_STEPS, noise_std=NOISE_STD,
@@ -91,7 +91,7 @@ def simulate_recurrence(recurrence_offsets, n_steps=N_STEPS, noise_std=NOISE_STD
             noise = NoiseModel.correlated(scale, prev_noise)
             prev_noise = float(noise)
         elif noise_type == 'systematic':
-            noise = NoiseModel.systematic(scale)
+            noise = NoiseModel.systematic(ideal[i], noise_std=noise_std)
         else:
             raise ValueError(f"Unknown noise_type: {noise_type}")
 
@@ -107,6 +107,43 @@ def run_trials(recurrence_offsets, n_trials=N_TRIALS, noise_type='gaussian', **k
     finals = []
     for _ in range(n_trials):
         err = simulate_recurrence(recurrence_offsets, noise_type=noise_type, **kwargs)
+        finals.append(err[-1])
+    return np.array(finals)
+
+
+def simulate_exponential_chain(n_steps=N_STEPS, noise_std=NOISE_STD, rate=RHO,
+                               noise_type='gaussian', init=1.0):
+    """Multiplicative-chain baseline: x_n = rate * x_(n-1)."""
+    measured = np.zeros(n_steps)
+    ideal = np.zeros(n_steps)
+    measured[0] = ideal[0] = init
+
+    prev_noise = 0.0
+    for i in range(1, n_steps):
+        ideal[i] = ideal[i - 1] * rate
+        scale = noise_std * ideal[i]
+
+        if noise_type == 'gaussian':
+            noise = NoiseModel.gaussian(scale)
+        elif noise_type == 'correlated':
+            noise = NoiseModel.correlated(scale, prev_noise)
+            prev_noise = float(noise)
+        elif noise_type == 'systematic':
+            noise = NoiseModel.systematic(ideal[i], noise_std=noise_std)
+        else:
+            raise ValueError(f"Unknown noise_type: {noise_type}")
+
+        measured[i] = measured[i - 1] * rate + noise
+
+    safe_ideal = np.where(np.abs(ideal) > 1e-12, ideal, 1e-12)
+    return np.abs(measured / safe_ideal - 1)
+
+
+def run_trials_exponential_chain(n_trials=N_TRIALS, noise_type='gaussian', **kwargs):
+    """Run many trials for multiplicative-chain baseline; return final errors."""
+    finals = []
+    for _ in range(n_trials):
+        err = simulate_exponential_chain(noise_type=noise_type, **kwargs)
         finals.append(err[-1])
     return np.array(finals)
 
@@ -127,9 +164,8 @@ RECURRENCES = {
     "Wide gap [2,4]"        : [2, 4],   # larger gap
     "Triple gap [3,5,7]"    : [3, 5, 7],# multi-path
     "Adjacent [1,3]"        : [1, 3],   # partial gap
-    "Pure exp (approx) [1]" : [1],      # single-step (simulated as Fib[1,1])
+    "Pure exp (approx) [1]" : [1],      # handled as multiplicative chain
 }
-# For [1] we simulate as a simple ρ-multiplication chain separately
 COLORS = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd','#8c564b']
 
 # ─────────────────────────── FIGURE 1: CAUSAL ISOLATION ───────────────────────────
@@ -148,13 +184,14 @@ def figure_gap_topology():
     results_syst  = {}
 
     for name, offsets in RECURRENCES.items():
-        if offsets == [1]:   # pure exponential proxy
-            offsets_use = [1, 1]  # degenerate; will compound fastest
+        if offsets == [1]:
+            results_gauss[name] = run_trials_exponential_chain(noise_type='gaussian')
+            results_corr[name] = run_trials_exponential_chain(noise_type='correlated')
+            results_syst[name] = run_trials_exponential_chain(noise_type='systematic')
         else:
-            offsets_use = offsets
-        results_gauss[name] = run_trials(offsets_use, noise_type='gaussian')
-        results_corr[name]  = run_trials(offsets_use, noise_type='correlated')
-        results_syst[name]  = run_trials(offsets_use, noise_type='systematic')
+            results_gauss[name] = run_trials(offsets, noise_type='gaussian')
+            results_corr[name]  = run_trials(offsets, noise_type='correlated')
+            results_syst[name]  = run_trials(offsets, noise_type='systematic')
 
     for ax, results, title in zip(
             axes,
@@ -166,8 +203,8 @@ def figure_gap_topology():
         cis    = [bootstrap_ci(v) for v in results.values()]
         yerr   = np.array([[m - lo, hi - m] for m, (lo, hi) in zip(means, cis)]).T
 
-        bars = ax.bar(range(len(labels)), means, color=COLORS[:len(labels)],
-                      edgecolor='black', linewidth=0.7, zorder=3)
+        ax.bar(range(len(labels)), means, color=COLORS[:len(labels)],
+               edgecolor='black', linewidth=0.7, zorder=3)
         ax.errorbar(range(len(labels)), means, yerr=yerr,
                     fmt='none', color='black', capsize=5, linewidth=1.5, zorder=4)
         ax.set_xticks(range(len(labels)))
@@ -187,7 +224,7 @@ def figure_gap_topology():
     plt.suptitle('Figure 1: Gap Structure is Causal — Three Noise Regimes',
                  fontsize=14, fontweight='bold', y=1.02)
     plt.tight_layout()
-    plt.savefig(f'{SAVE_DIR}/figure_1_causal_isolation.png', dpi=300, bbox_inches='tight')
+    plt.savefig(SAVE_DIR / "figure_1_causal_isolation.png", dpi=300, bbox_inches='tight')
     plt.close()
     print("    ✓ Figure 1 saved")
 
@@ -220,10 +257,9 @@ def figure_noise_regimes():
 
         for (name, offsets), color in zip(RECURRENCES.items(), COLORS):
             if offsets == [1]:
-                offsets_use = [1, 1]
+                err = simulate_exponential_chain(noise_type=noise_type)
             else:
-                offsets_use = offsets
-            err = simulate_recurrence(offsets_use, noise_type=noise_type)
+                err = simulate_recurrence(offsets, noise_type=noise_type)
             ax.plot(err, label=name, color=color,
                     linewidth=2.5 if 'Padovan' in name else 1.2,
                     alpha=1.0 if 'Padovan' in name else 0.65,
@@ -239,7 +275,7 @@ def figure_noise_regimes():
     plt.suptitle('Figure 2: Padovan Advantage Persists Across All Noise Regimes',
                  fontsize=14, fontweight='bold', y=1.02)
     plt.tight_layout()
-    plt.savefig(f'{SAVE_DIR}/figure_2_noise_regimes.png', dpi=300, bbox_inches='tight')
+    plt.savefig(SAVE_DIR / "figure_2_noise_regimes.png", dpi=300, bbox_inches='tight')
     plt.close()
     print("    ✓ Figure 2 saved")
 
@@ -267,13 +303,8 @@ def figure_eigenvalue_anatomy():
         for i in range(d - 1):
             M[i + 1, i] = 1.0
         for k in offsets:
-            M[0, k - 1] = 1.0  # actually: M[0, d-k] depending on convention
-        # Use characteristic polynomial approach: coefficients of x^d - sum(x^(d-k))
-        poly = np.zeros(d + 1)
-        poly[0] = 1
-        for k in offsets:
-            poly[d - k] -= 1
-        eigs = np.roots(poly)
+            M[0, k - 1] = 1.0
+        eigs = np.linalg.eigvals(M)
         ax.scatter(eigs.real, eigs.imag, color=color, s=80,
                    label=name, zorder=3, edgecolors='black', linewidths=0.5)
 
@@ -298,11 +329,12 @@ def figure_eigenvalue_anatomy():
         if offsets == [1]:
             continue
         d = max(offsets)
-        poly = np.zeros(d + 1)
-        poly[0] = 1
+        M = np.zeros((d, d))
+        for i in range(d - 1):
+            M[i + 1, i] = 1.0
         for k in offsets:
-            poly[d - k] -= 1
-        eigs = np.roots(poly)
+            M[0, k - 1] = 1.0
+        eigs = np.linalg.eigvals(M)
         # Damping = max |λ| among non-dominant eigenvalues
         mods = np.sort(np.abs(eigs))
         damping = mods[-2] if len(mods) >= 2 else mods[-1]
@@ -341,7 +373,7 @@ def figure_eigenvalue_anatomy():
     plt.suptitle('Figure 3: Eigenvalue Damping → Error Suppression (Causal Mechanism)',
                  fontsize=14, fontweight='bold', y=1.02)
     plt.tight_layout()
-    plt.savefig(f'{SAVE_DIR}/figure_3_eigenvalue_anatomy.png', dpi=300, bbox_inches='tight')
+    plt.savefig(SAVE_DIR / "figure_3_eigenvalue_anatomy.png", dpi=300, bbox_inches='tight')
     plt.close()
     print("    ✓ Figure 3 saved")
 
@@ -363,12 +395,11 @@ def figure_architectural_simulation():
         d = max(recurrence_offsets)
         for i in range(d):
             ideal[i] = measured[i] = 1.0
-        prev_noise = 0.0
         for i in range(d, n_elements):
             ideal[i] = sum(ideal[i - k] for k in recurrence_offsets)
             scale = noise_std * ideal[i]
             if noise_type == 'systematic':
-                noise = NoiseModel.systematic(scale)
+                noise = NoiseModel.systematic(ideal[i], noise_std=noise_std)
             else:
                 noise = NoiseModel.gaussian(scale)
             measured[i] = sum(measured[i - k] for k in recurrence_offsets) + noise
@@ -441,7 +472,7 @@ def figure_architectural_simulation():
         f"KS p={p:.4f}, Cohen's d={cohens_d:.3f} (systematic construction noise)",
         fontsize=13, fontweight='bold')
     plt.tight_layout()
-    plt.savefig(f'{SAVE_DIR}/figure_4_architectural_simulation.png', dpi=300, bbox_inches='tight')
+    plt.savefig(SAVE_DIR / "figure_4_architectural_simulation.png", dpi=300, bbox_inches='tight')
     plt.close()
     print("    ✓ Figure 4 saved")
 
@@ -485,14 +516,27 @@ def demo_applications():
 
     def giga_crossover(parent_a, parent_b, n_generations=20, mutation_rate=0.05):
         """
-        Instead of alternating genes [A,B,A,B,...], use Padovan gap structure:
-        child[n] = child[n-2] * α + child[n-3] * (1-α) + mutation
-        where α is drawn from parents' fitness ratio.
+        Two-parent crossover with Padovan-gap indexing.
+        Child genes are blended from both parents at (n-2, n-3) style offsets
+        and lightly regularized by prior child history.
         """
-        child = list(parent_a[:3])
-        for i in range(3, n_generations):
+        if len(parent_a) == 0 or len(parent_b) == 0:
+            raise ValueError("Both parents must contain at least one gene")
+
+        seed_count = min(3, n_generations)
+        child = []
+        for i in range(seed_count):
+            a = parent_a[i % len(parent_a)]
+            b = parent_b[(i + 1) % len(parent_b)]
+            child.append(float(np.clip(0.5 * a + 0.5 * b, 0, 1)))
+
+        for i in range(seed_count, n_generations):
             alpha = np.random.beta(2, 2)  # fitness-weighted blend
-            gene = alpha * child[i-2] + (1-alpha) * child[i-3]
+            idx_a = (i - 2) % len(parent_a)
+            idx_b = (i - 3) % len(parent_b)
+            parent_mix = alpha * parent_a[idx_a] + (1 - alpha) * parent_b[idx_b]
+            child_mix = 0.5 * (child[i - 2] + child[i - 3])
+            gene = 0.5 * parent_mix + 0.5 * child_mix
             if np.random.rand() < mutation_rate:
                 gene += np.random.normal(0, 0.1)
             child.append(float(np.clip(gene, 0, 1)))
@@ -505,6 +549,34 @@ def demo_applications():
     print(f"   Parent B (first 5): {[f'{g:.3f}' for g in parent_b]}")
     print(f"   Child (first 8):    {[f'{g:.3f}' for g in child[:8]]}")
     print(f"   Child variance:     {np.var(child):.4f}")
+
+    # Deterministic probes to validate review-critical behavior.
+    print("\n   Validation probes")
+    rng_state = np.random.get_state()
+    np.random.seed(12345)
+    ideal_probe = 100.0
+    noise_std_probe = 0.05
+    bias_probe = 0.02
+    systematic_samples = np.array([
+        NoiseModel.systematic(ideal_probe, noise_std=noise_std_probe, bias=bias_probe)
+        for _ in range(20000)
+    ])
+    observed_mean = float(np.mean(systematic_samples))
+    expected_mean = bias_probe * ideal_probe
+    np.random.set_state(rng_state)
+    print(f"   Systematic mean probe: observed={observed_mean:.3f}, expected={expected_mean:.3f}")
+    if abs(observed_mean - expected_mean) > 0.2:
+        raise RuntimeError("Systematic bias probe failed: mean is not scaled to ideal step size")
+
+    rng_state = np.random.get_state()
+    np.random.seed(7)
+    probe_parent_a = [0.0] * 5
+    probe_parent_b = [1.0] * 5
+    probe_child = giga_crossover(probe_parent_a, probe_parent_b, n_generations=10, mutation_rate=0.0)
+    np.random.set_state(rng_state)
+    print(f"   GIGA two-parent probe child[:6]: {[round(v, 3) for v in probe_child[:6]]}")
+    if not (max(probe_child) > 0.2 and min(probe_child) < 0.8):
+        raise RuntimeError("GIGA probe failed: child does not reflect two-parent inheritance")
 
     # ── 3. PNSF: Padovan Noise-Shaping Filter ──
     print("\n3. PNSF — Padovan Noise-Shaping Filter")
@@ -691,7 +763,7 @@ def main():
         'noise_std': NOISE_STD,
         'application_results': app_results,
     }
-    with open(f'{SAVE_DIR}/summary.json', 'w') as f:
+    with open(SAVE_DIR / "summary.json", 'w', encoding='utf-8') as f:
         json.dump(summary, f, indent=2)
 
     print(f"\n{'='*60}")
