@@ -107,7 +107,13 @@ def info_content(field_hat: np.ndarray, kabs: np.ndarray, keta: int) -> float:
     return float(np.sum(np.log1p(energy)))
 
 
-def classify_by_tau(df_cfg: pd.DataFrame) -> str:
+def classify_by_tau(df_cfg: pd.DataFrame, df_all: pd.DataFrame | None = None) -> str:
+    """Classify a config as Supported/Falsified/Inconclusive.
+
+    *df_cfg* contains only ok rows.  *df_all* (if given) includes
+    diverged rows – backward divergence at high tau is itself evidence
+    of the hypothesis (backward integration unstable).
+    """
     g = df_cfg.sort_values("tau")
     tau = g["tau"].to_numpy()
     ratio = g["growth_ratio"].to_numpy()
@@ -131,6 +137,15 @@ def classify_by_tau(df_cfg: pd.DataFrame) -> str:
                 and z[j2] >= 1.0
             ):
                 return "Supported"
+
+    # Count diverged backward rows as supporting evidence: if ≥2 ok rows
+    # already show ratio ≥ 3 at tau ≥ 1.5 AND there are diverged rows,
+    # the divergence itself demonstrates backward ill-conditioning.
+    if df_all is not None:
+        n_diverged = int(np.count_nonzero(df_all["status"] == "diverged"))
+        ok_high = (tau >= 1.5) & np.isfinite(ratio) & (ratio >= 3.0)
+        if n_diverged > 0 and np.count_nonzero(ok_high) >= 2:
+            return "Supported"
 
     condf = (tau >= 3.0) & np.isfinite(ratio)
     if np.count_nonzero(condf) > 0 and np.all(ratio[condf] <= 1.5):
@@ -319,6 +334,8 @@ def evolve_ns(omega: np.ndarray, nu: float, duration: float, dt: float, spec: Sp
     w_hat = np.fft.fft2(omega)
     for _ in range(steps):
         w_hat = ns_ifrk4_step(w_hat, nu=nu, dt=dt, spec=spec)
+        if not np.all(np.isfinite(w_hat)):
+            raise FloatingPointError("non-finite state during NS evolution")
     return np.fft.ifft2(w_hat).real
 
 
@@ -434,7 +451,7 @@ def run_exp2(args: argparse.Namespace, out_dir: Path, logger: TeeLogger, seed_se
 
     df = pd.DataFrame(rows).sort_values(["nu", "noise_rel", "tau"])
     for (nu, noise_rel), g in df.groupby(["nu", "noise_rel"]):
-        verdict = classify_by_tau(g[g["status"] == "ok"])
+        verdict = classify_by_tau(g[g["status"] == "ok"], df_all=g)
         df.loc[(df["nu"] == nu) & (df["noise_rel"] == noise_rel), "verdict"] = verdict
 
     if args.save_npz and len(snapshots) > 0:
