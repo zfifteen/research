@@ -1,39 +1,43 @@
-# QC Checklist (Solo Minimum Rigor)
+# QC Checklist (Conservative DOI Readiness)
 
 ## Claims
-- Crossing the Gaussian phase wall (`r = σ`) separates convergent interior behavior from scattering-prone exterior behavior.
-- A phase-aware rule can improve stability/sample efficiency under noisy conditions versus baseline dynamics.
-- The reported benchmark and figure artifacts in this project are sufficient to audit these claims.
+- The Gaussian hill surface has a curvature sign transition at `r = sigma` (derivation in technical note Appendix A).
+- Under the bundled report conditions, PhaseWall is associated with lower median final objective than vanilla on some settings and higher on others.
+- Canonical quantitative claims in this package are auditable from report-derived CSV artifacts plus hash verification.
 
 ## Evidence Map
-- Claim 1 -> `gaussian-hill-surface/docs/technical-note/technical_note.md`
-- Claim 2 -> `gaussian-hill-surface/docs/analysis/benchmarks.md`
-- Claim 2 -> `gaussian-hill-surface/artifacts/reports/PhaseWall_Benchmark_Report.pdf`
-- Claim 3 -> `gaussian-hill-surface/artifacts/figures/benchmarks/benchmark_bars.png`
-- Claim 3 -> `gaussian-hill-surface/artifacts/figures/benchmarks/benchmark_ratios.png`
+- Geometry claim -> `docs/technical-note/technical_note.md` (Appendix A)
+- Benchmark protocol + interpretation -> `docs/analysis/benchmarks.md`
+- Full report-derived table -> `artifacts/results/phasewall_report_table.csv`
+- Canonical Vanilla vs PhaseWall claim table -> `artifacts/results/phasewall_vs_vanilla_claims.csv`
+- Source report -> `artifacts/reports/PhaseWall_Benchmark_Report.pdf`
+- Artifact integrity manifest -> `artifacts/SHA256SUMS`
 
 ## Repro Command
-Command: python3 -c "import pathlib; req=[pathlib.Path('gaussian-hill-surface/artifacts/reports/PhaseWall_Benchmark_Report.pdf'), pathlib.Path('gaussian-hill-surface/docs/analysis/benchmarks.md')]; assert all(p.exists() for p in req), 'Missing required reproducibility artifacts'; print('repro smoke pass')"
+Command: bash scripts/qc_check.sh
 
 ## Environment
 - OS: macOS
 - Python: 3.10+
-- Notes: This checklist validates artifact integrity/repro traceability before DOI release.
+- Shell: bash/zsh
+- Notes: QC validates package integrity and claim consistency; it does not regenerate experiments.
 
 ## Limitations
-- This QC pass validates existence/traceability and a reproducibility smoke command, not full statistical re-execution.
-- Strong claims should still be interpreted with benchmark scope limits stated in benchmark docs.
+- Seed-level raw trial logs are not bundled in this release.
+- No from-scratch rerun pipeline is included.
+- Report-derived CSVs support claim auditing but are not a replacement for raw-run replay.
 
 ## Artifact Manifest
-- path: gaussian-hill-surface/artifacts/reports/PhaseWall_Benchmark_Report.pdf
-- path: gaussian-hill-surface/artifacts/figures/concepts/img.png
-- path: gaussian-hill-surface/artifacts/figures/concepts/img_1.png
-- path: gaussian-hill-surface/artifacts/figures/benchmarks/benchmark_bars.png
-- path: gaussian-hill-surface/artifacts/figures/benchmarks/benchmark_ratios.png
-- path: gaussian-hill-surface/docs/analysis/benchmarks.md
-- path: gaussian-hill-surface/docs/technical-note/technical_note.md
+- path: artifacts/reports/PhaseWall_Benchmark_Report.pdf
+- path: artifacts/figures/benchmarks/benchmark_bars.png
+- path: artifacts/figures/benchmarks/benchmark_ratios.png
+- path: artifacts/results/phasewall_report_table.csv
+- path: artifacts/results/phasewall_vs_vanilla_claims.csv
+- path: artifacts/SHA256SUMS
+- path: docs/analysis/benchmarks.md
+- path: docs/technical-note/technical_note.md
 
 ## DOI
 Release Version: v0.1.0
-Version DOI: TBD
-Concept DOI: TBD
+Version DOI: Pre-DOI draft; DOI will be minted at release publication.
+Concept DOI: Pre-DOI draft; DOI will be minted at release publication.

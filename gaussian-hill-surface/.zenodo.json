@@ -1,0 +1,25 @@
+{
+  "title": "Gaussian Hill Surface / PhaseWall",
+  "description": "Exploratory, artifact-backed research package for Gaussian curvature boundary analysis and report-derived benchmark evidence.",
+  "upload_type": "software",
+  "license": "MIT",
+  "creators": [
+    {
+      "name": "Lopez, Dionisio Alberto"
+    }
+  ],
+  "keywords": [
+    "gaussian-curvature",
+    "optimization",
+    "cma-es",
+    "phasewall",
+    "reproducibility"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/zfifteen/research/tree/main/gaussian-hill-surface",
+      "relation": "isSupplementTo",
+      "resource_type": "software"
+    }
+  ]
+}

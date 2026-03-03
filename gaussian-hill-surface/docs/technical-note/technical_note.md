@@ -1,108 +1,136 @@
 # PhaseWall at the Gaussian Curvature Boundary: An Exploratory Technical Note
 
 ## Abstract
-This note evaluates whether the Gaussian curvature transition at `r = σ` can be used as a practical stabilizer for stochastic optimization updates. The method applies a soft radial damping rule in normalized radius space (`r = ||x-μ||/σ`) with a Mahalanobis-radius extension for anisotropic settings. In the reported benchmark artifacts (Sphere, Rosenbrock, Rastrigin), the PhaseWall variant shows lower final objective values than the vanilla baseline under the documented conditions. This release is exploratory: it packages current evidence artifacts and QC traceability, but does not include a full from-scratch rerun pipeline.
+This note evaluates whether a phase-aware update rule at the Gaussian curvature boundary (`r = sigma`) is associated with better optimization outcomes under noisy conditions in the bundled benchmark report artifacts. The release is exploratory and artifact-backed: it includes report-derived result tables, hash verification, and claim recomputation checks, but it does not include seed-level raw logs or a full from-scratch rerun pipeline.
 
-## 1. Problem and Scope
+## 1. Research Question and Scope
 ### 1.1 Research Question
-Can a phase-aware update rule at the Gaussian curvature boundary (`r = σ`) improve robustness and sample efficiency in noisy optimization relative to a vanilla baseline in the reported runs?
+Can a phase-aware damping rule at the Gaussian curvature transition (`r = sigma`) improve robustness and sample efficiency relative to a vanilla baseline under the reported noisy benchmark conditions?
 
 ### 1.2 Scope Boundaries
 In scope:
-- Geometric interpretation of the Gaussian surface boundary as a practical update-control heuristic.
-- Artifact-backed benchmark comparisons already documented in this repository.
+- Geometric boundary claim for the Gaussian graph surface.
+- Benchmark claims that can be traced to bundled report-derived artifacts.
 
 Out of scope:
-- Universal claims across all optimizers, tasks, or noise regimes.
-- Claims of production-readiness beyond the reported artifacts.
-- New empirical results not already present in repository evidence.
+- Universal claims across optimizers, tasks, or noise regimes.
+- Production-readiness claims.
+- New empirical claims from unbundled experiments.
 
-## 2. Method
-### 2.1 Core Radius Definitions
+## 2. Method Definition
+### 2.1 Radius Definitions
 Isotropic normalized radius:
 
-`r = ||x - μ|| / σ`
+`r = ||x - mu|| / sigma`
 
 Anisotropic extension (Mahalanobis radius):
 
-`r = sqrt((x - μ)^T Σ^-1 (x - μ))`
+`r = sqrt((x - mu)^T Sigma^-1 (x - mu))`
 
-The method uses this radius to switch behavior between interior and exterior regimes around the boundary at `r = 1` (equivalent to `r = σ` before normalization).
+### 2.2 Baseline and Variant
+Baseline in this note: Vanilla CMA-ES as defined in the bundled report (`artifacts/reports/PhaseWall_Benchmark_Report.pdf`) under the same evaluation budget, noise model, and seed count.
 
-### 2.2 Soft Damping Rule (z-space)
-The current mechanism uses soft radial damping on samples outside the boundary:
+Variant in this note: PhaseWall (s=0.4), which applies soft radial damping in whitened z-space for samples outside the phase-wall radius.
 
-```python
-def apply_phase_wall_z(z, r0, strength=0.4):
-    z = z.copy()
-    norms = np.linalg.norm(z, axis=1)
-    outside = norms > r0
-    if np.any(outside):
-        scale = 1.0 - strength * (1.0 - r0 / norms[outside])
-        scale = np.clip(scale, 0.0, 1.0)
-        z[outside] *= scale[:, None]
-    return z
-```
+Reported comparator set in the source report also includes LR-Adapt, 4x Population, and PW 0.4 + LR-Adapt.
 
-Detailed implementation notes for downstream productization are maintained in the PhaseWall product repository:
-- `phasewall/docs/spec/phasewall-tech-spec-v2.1.md`
+## 3. Experimental Protocol (Report-Derived)
+The benchmark protocol used for the reported evidence is:
+- Functions: Sphere, Rosenbrock, Rastrigin, Ellipsoid
+- Dimensions: 10, 20
+- Seeds: 20 independent seeds per configuration
+- Budget: 1,000 function evaluations per run
+- Noise model: additive Gaussian noise with sigma = 0.1
+- Metric: median final best value at fixed budget (lower is better)
+- Statistical test: one-sided Wilcoxon signed-rank test (as reported)
 
-## 3. Experimental Setup (Reported Artifacts)
-This note summarizes existing repository artifacts and does not claim fresh reruns in this revision.
+Machine-auditable artifacts in this repository:
+- `artifacts/results/phasewall_report_table.csv`
+- `artifacts/results/phasewall_vs_vanilla_claims.csv`
+- `artifacts/SHA256SUMS`
 
-Reported benchmark families:
-- Sphere
-- Rosenbrock
-- Rastrigin
+## 4. Results (Canonical Claims)
+The canonical narrative compares Vanilla CMA-ES and PhaseWall (s=0.4) using `artifacts/results/phasewall_vs_vanilla_claims.csv`.
 
-Evaluation details (seed policy, budgets, and run settings) are treated as documented in the benchmark artifacts:
-- `gaussian-hill-surface/docs/analysis/benchmarks.md`
-- `gaussian-hill-surface/artifacts/reports/PhaseWall_Benchmark_Report.pdf`
+| Function | Dim | Vanilla Median | PhaseWall Median | ratio_vs_vanilla | improvement_factor | p_value |
+|---|---:|---:|---:|---:|---:|---:|
+| Sphere | 10 | -0.2133 | -0.1925 | 0.902485 | 1.108052 | 0.9836 |
+| Sphere | 20 | -0.0913 | -0.0656 | 0.718510 | 1.391768 | 0.7625 |
+| Rosenbrock | 10 | 8.52 | 8.47 | 0.994131 | 1.005903 | 0.5364 |
+| Rosenbrock | 20 | 91.93 | 32.44 | 0.352877 | 2.833847 | 0.0120 |
+| Rastrigin | 10 | 22.78 | 35.78 | 1.570676 | 0.636669 | 0.8058 |
+| Rastrigin | 20 | 144.3 | 141.8 | 0.982675 | 1.017630 | 0.3781 |
+| Ellipsoid | 10 | 1466.6 | 1788.4 | 1.219419 | 0.820063 | 0.7021 |
+| Ellipsoid | 20 | 63294.2 | 101988 | 1.611332 | 0.620604 | 0.8847 |
 
-## 4. Results (Artifact-Backed)
-From `docs/analysis/benchmarks.md`, the reported median comparisons are:
+Interpretation note:
+- `ratio_vs_vanilla < 1.0` indicates lower median final objective for PhaseWall on that problem.
+- The table shows mixed outcomes across function families, including improvements on some settings and degradations on others.
 
-| Function | Vanilla Median | PhaseWall Median | Reported Win Factor |
-|---|---:|---:|---:|
-| Sphere | 1.2403 | 0.5050 | 2.42x |
-| Rosenbrock | 120.2847 | 31.0244 | 3.88x |
-| Rastrigin | 40.0756 | 28.8743 | 1.47x |
-
-The same benchmark note also reports a 58/60 run-level win count in the recorded set. These values are presented as reported artifact outcomes under the documented conditions, not as universal performance guarantees.
-
-Supporting artifacts:
-- `gaussian-hill-surface/artifacts/reports/PhaseWall_Benchmark_Report.pdf`
-- `gaussian-hill-surface/artifacts/figures/benchmarks/benchmark_bars.png`
-- `gaussian-hill-surface/artifacts/figures/benchmarks/benchmark_ratios.png`
-- `gaussian-hill-surface/artifacts/figures/concepts/img.png`
-- `gaussian-hill-surface/artifacts/figures/concepts/img_1.png`
-
-## 5. Limitations and Failure Modes
-- This release validates artifact traceability and summary reproducibility checks, not full benchmark regeneration from raw scripts.
-- Reported results are limited to currently documented tasks and settings; generalization outside these settings remains unproven.
-- Strong performance claims are sensitive to noise regime, parameterization, and implementation details.
-- A full rerun package (raw run logs, seed-indexed regeneration scripts) is not yet included in this version.
-
-## 6. Reproducibility
-QC reproducibility command (from `QC_CHECKLIST.md`):
+## 5. Reproducibility and Integrity Checks
+Repository QC command:
 
 ```bash
-python3 -c "import pathlib; req=[pathlib.Path('gaussian-hill-surface/artifacts/reports/PhaseWall_Benchmark_Report.pdf'), pathlib.Path('gaussian-hill-surface/docs/analysis/benchmarks.md')]; assert all(p.exists() for p in req), 'Missing required reproducibility artifacts'; print('repro smoke pass')"
+bash scripts/qc_check.sh
 ```
 
-Environment snapshot:
-- OS: macOS
-- Python: 3.10+
-- Check type: artifact integrity + evidence traceability smoke check
+This command verifies:
+- Presence and structure of release-facing metadata/docs.
+- Hash integrity for canonical artifacts listed in `artifacts/SHA256SUMS`.
+- Numerical consistency of claim metrics in `phasewall_vs_vanilla_claims.csv` by recomputing
+  `improvement_factor = vanilla_median / phasewall_median` and
+  `ratio_vs_vanilla = phasewall_median / vanilla_median`.
 
-Artifact manifest is maintained in:
-- `gaussian-hill-surface/QC_CHECKLIST.md`
+## 6. Limitations
+- Evidence is report-derived rather than regenerated from seed-level logs.
+- No full rerun pipeline is included in this release.
+- Conclusions are limited to the bundled benchmark protocol and should not be generalized beyond it.
 
 ## 7. Conclusion
-In these reported runs, the PhaseWall formulation is associated with lower final objective values than the vanilla baseline on the documented benchmark set. The current evidence supports an exploratory claim that geometry-aware damping may improve robustness under the tested conditions. The next validation step is to add a full rerun pipeline with raw-result regeneration to strengthen reproducibility beyond artifact-level verification.
+The current artifact-backed evidence supports an exploratory claim: phase-aware damping at the Gaussian boundary is associated with better median final objective on some reported noisy settings (notably Rosenbrock 20D), while it is neutral or worse on others. This package is framed as a conservative evidence release, not a universal performance claim.
+
+## Appendix A: Curvature Sign Derivation for the Gaussian Hill
+Let
+
+`z(x, y) = exp(-(x^2 + y^2) / (2 sigma^2))`
+
+and `r^2 = x^2 + y^2`.
+
+For a graph surface `z = f(x, y)`, Gaussian curvature is:
+
+`K = (f_xx f_yy - f_xy^2) / (1 + f_x^2 + f_y^2)^2`
+
+For this `z(x, y)`:
+
+`z_x = -(x / sigma^2) z`
+
+`z_y = -(y / sigma^2) z`
+
+`z_xx = ((x^2 - sigma^2) / sigma^4) z`
+
+`z_yy = ((y^2 - sigma^2) / sigma^4) z`
+
+`z_xy = (xy / sigma^4) z`
+
+Compute the numerator:
+
+`z_xx z_yy - z_xy^2`
+
+`= (z^2 / sigma^8) [ (x^2 - sigma^2)(y^2 - sigma^2) - x^2 y^2 ]`
+
+`= (z^2 / sigma^8) [ sigma^4 - sigma^2 (x^2 + y^2) ]`
+
+`= (z^2 / sigma^6) (sigma^2 - r^2)`
+
+The denominator `(1 + z_x^2 + z_y^2)^2` is strictly positive, so the sign of `K` is the sign of `(sigma^2 - r^2)`:
+- `r < sigma` -> `K > 0`
+- `r = sigma` -> `K = 0`
+- `r > sigma` -> `K < 0`
+
+Therefore, the curvature sign change occurs exactly at `r = sigma`.
 
 ## References
-1. `gaussian-hill-surface/docs/analysis/benchmarks.md`
-2. `gaussian-hill-surface/artifacts/reports/PhaseWall_Benchmark_Report.pdf`
-3. `gaussian-hill-surface/README.md`
-4. `phasewall/docs/spec/phasewall-tech-spec-v2.1.md` (downstream implementation reference)
+1. `artifacts/reports/PhaseWall_Benchmark_Report.pdf`
+2. `artifacts/results/phasewall_report_table.csv`
+3. `artifacts/results/phasewall_vs_vanilla_claims.csv`
+4. `scripts/qc_check.sh`
