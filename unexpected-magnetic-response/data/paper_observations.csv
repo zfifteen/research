@@ -1,0 +1,11 @@
+id,category,quantity,value,units,source_note
+obs_01,experiment,max_field,20,T,Maximum applied magnetic field in the STM experiment
+obs_02,experiment,temperature,4.2,K,Measurement temperature
+obs_03,conductance,au_low_field_gb,1.0,G0,Au single-atom contact plateau near one quantum
+obs_04,conductance,au_high_field_drop,0.15,fraction,Reported conductance drop at 20 T in many Au contacts
+obs_05,conductance,au_high_field_gb,0.85,G0,Implied by a 15 percent drop from 1.0 G0
+obs_06,model,oxygen_state_conductance,0.8,G0,DFT geometry with O2 in the junction gives about 0.8 G0
+obs_07,model,oxygen_magnetic_moment,1.7,mu_B,Magnetic moment reported for a favorable O2 geometry
+obs_08,model,mae_order,1e-4,eV,Magnetic anisotropy energy reported as order 10^-4 eV
+obs_09,mechanics,ag_jump_to_contact_change,1,qualitative,Ag shows stronger change in pre-contact conductance statistics
+obs_10,interpretation,pure_metal_effect_weak,1,qualitative,Paper argues pure Au or Ag does not explain the strong conductance shift

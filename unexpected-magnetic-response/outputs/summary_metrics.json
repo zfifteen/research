@@ -1,0 +1,25 @@
+{
+  "headline_result": "A 0.8 G0 oxygen-assisted state requires 75 percent high-field occupancy to produce a mean conductance of 0.85 G0 in a two-state model.",
+  "histogram_example": {
+    "example_high_field_occupancy": 0.75,
+    "example_low_field_occupancy": 0.05
+  },
+  "occupancy_metrics": {
+    "chosen_oxygen_state_conductance": 0.8,
+    "max_state_conductance_for_feasibility": 0.85,
+    "required_occupancy_at_chosen_state": 0.7500000000000003,
+    "target_mean_conductance": 0.85
+  },
+  "orientation_metrics": {
+    "boltzmann_ratio_at_chosen_energy": 1.3182407078001042,
+    "chosen_energy_bias_ev": 0.0001,
+    "temperature_k": 4.2
+  },
+  "project": "unexpected-magnetic-response",
+  "sensitivity_crossings": {
+    "0.60": 0.37500000000000006,
+    "0.70": 0.5,
+    "0.80": 0.7500000000000003,
+    "0.85": 1.0
+  }
+}
